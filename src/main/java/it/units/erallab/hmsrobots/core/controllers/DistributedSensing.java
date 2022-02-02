@@ -18,7 +18,7 @@ package it.units.erallab.hmsrobots.core.controllers;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import it.units.erallab.hmsrobots.core.objects.SensingVoxel;
+import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.util.Grid;
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -27,17 +27,17 @@ import java.util.Objects;
 /**
  * @author eric
  */
-public class DistributedSensing extends AbstractController<SensingVoxel> {
+public class DistributedSensing extends AbstractController {
 
-  private enum Dir {
+  protected enum Dir {
 
     N(0, -1, 0),
     E(1, 0, 1),
     S(0, 1, 2),
     W(-1, 0, 3);
 
-    private final int dx;
-    private final int dy;
+    final int dx;
+    final int dy;
     private final int index;
 
     Dir(int dx, int dy, int index) {
@@ -56,7 +56,7 @@ public class DistributedSensing extends AbstractController<SensingVoxel> {
     }
   }
 
-  private static class FunctionWrapper implements TimedRealFunction {
+  protected static class FunctionWrapper implements TimedRealFunction {
     @JsonProperty
     private final TimedRealFunction inner;
 
@@ -82,7 +82,7 @@ public class DistributedSensing extends AbstractController<SensingVoxel> {
   }
 
   @JsonProperty
-  private final int signals;
+  protected final int signals;
   @JsonProperty
   private final Grid<Integer> nOfInputGrid;
   @JsonProperty
@@ -90,14 +90,14 @@ public class DistributedSensing extends AbstractController<SensingVoxel> {
   @JsonProperty
   private final Grid<TimedRealFunction> functions;
 
-  private final Grid<double[]> lastSignalsGrid;
+  protected final Grid<double[]> lastSignalsGrid;
   private final Grid<double[]> currentSignalsGrid;
 
-  public static int nOfInputs(SensingVoxel voxel, int signals) {
+  public static int nOfInputs(Voxel voxel, int signals) {
     return signals * Dir.values().length + voxel.getSensors().stream().mapToInt(s -> s.getDomains().length).sum();
   }
 
-  public static int nOfOutputs(SensingVoxel voxel, int signals) {
+  public static int nOfOutputs(Voxel voxel, int signals) {
     return 1 + signals * Dir.values().length;
   }
 
@@ -117,7 +117,7 @@ public class DistributedSensing extends AbstractController<SensingVoxel> {
     reset();
   }
 
-  public DistributedSensing(Grid<? extends SensingVoxel> voxels, int signals) {
+  public DistributedSensing(Grid<Voxel> voxels, int signals) {
     this(
         signals,
         Grid.create(voxels, v -> (v == null) ? 0 : nOfInputs(v, signals)),
@@ -159,31 +159,31 @@ public class DistributedSensing extends AbstractController<SensingVoxel> {
 
 
   @Override
-  public Grid<Double> computeControlSignals(double t, Grid<? extends SensingVoxel> voxels) {
-    Grid<Double> controSignals = Grid.create(voxels.getW(), voxels.getH());
-    for (Grid.Entry<? extends SensingVoxel> entry : voxels) {
-      if (entry.getValue() == null) {
+  public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
+    Grid<Double> controlSignals = Grid.create(voxels);
+    for (Grid.Entry<Voxel> entry : voxels) {
+      if (entry.value() == null) {
         continue;
       }
       //get inputs
-      double[] signals = getLastSignals(entry.getX(), entry.getY());
-      double[] inputs = ArrayUtils.addAll(entry.getValue().getSensorReadings(), signals);
+      double[] signals = getLastSignals(entry.key().x(), entry.key().y());
+      double[] inputs = ArrayUtils.addAll(entry.value().getSensorReadings(), signals);
       //compute outputs
-      TimedRealFunction function = functions.get(entry.getX(), entry.getY());
-      double[] outputs = function != null ? function.apply(t, inputs) : new double[1 + this.signals * Dir.values().length];
+      TimedRealFunction function = functions.get(entry.key().x(), entry.key().y());
+      double[] outputs = function != null ? function.apply(t, inputs) : new double[nOfOutputs(entry.key().x(), entry.key().y())];
       //save outputs
-      controSignals.set(entry.getX(), entry.getY(), outputs[0]);
-      System.arraycopy(outputs, 1, currentSignalsGrid.get(entry.getX(), entry.getY()), 0, this.signals * Dir.values().length);
+      controlSignals.set(entry.key().x(), entry.key().y(), outputs[0]);
+      System.arraycopy(outputs, 1, currentSignalsGrid.get(entry.key().x(), entry.key().y()), 0, outputs.length - 1);
     }
-    for (Grid.Entry<? extends SensingVoxel> entry : voxels) {
-      if (entry.getValue() == null) {
+    for (Grid.Entry<Voxel> entry : voxels) {
+      if (entry.value() == null) {
         continue;
       }
-      int x = entry.getX();
-      int y = entry.getY();
-      System.arraycopy(currentSignalsGrid.get(x, y), 0, lastSignalsGrid.get(x, y), 0, this.signals * Dir.values().length);
+      int x = entry.key().x();
+      int y = entry.key().y();
+      System.arraycopy(currentSignalsGrid.get(x, y), 0, lastSignalsGrid.get(x, y), 0, currentSignalsGrid.get(x, y).length);
     }
-    return controSignals;
+    return controlSignals;
   }
 
   public int nOfInputs(int x, int y) {
@@ -194,7 +194,7 @@ public class DistributedSensing extends AbstractController<SensingVoxel> {
     return nOfOutputGrid.get(x, y);
   }
 
-  private double[] getLastSignals(int x, int y) {
+  protected double[] getLastSignals(int x, int y) {
     double[] values = new double[signals * Dir.values().length];
     if (signals <= 0) {
       return values;

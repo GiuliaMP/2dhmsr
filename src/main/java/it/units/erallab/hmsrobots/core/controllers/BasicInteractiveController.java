@@ -1,13 +1,13 @@
 package it.units.erallab.hmsrobots.core.controllers;
 
 import it.units.erallab.hmsrobots.behavior.PoseUtils;
-import it.units.erallab.hmsrobots.core.objects.ControllableVoxel;
+import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.util.Grid;
 import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
 
-public class BasicInteractiveController extends AbstractController<ControllableVoxel> {
+public class BasicInteractiveController extends AbstractController {
 
   private List<Boolean> isKeyPressed;
   List<Set<Grid.Key>>  poses;
@@ -19,22 +19,22 @@ public class BasicInteractiveController extends AbstractController<ControllableV
     }
   }
 
-  private Grid<Boolean> getShape(Grid<? extends ControllableVoxel> voxels) {
+  private Grid<Boolean> getShape(Grid<Voxel> voxels) {
     Grid<Boolean> shape = Grid.create(voxels, Objects::isNull);
     for (var val : voxels) {
-        shape.set(val.getX(), val.getY(), voxels.get(val.getX(), val.getY()) != null);
+        shape.set(val.key().x(), val.key().y(), voxels.get(val.key().x(), val.key().y()) != null);
     }
     return shape;
   }
 
   @Override
-  public Grid<Double> computeControlSignals(double t, Grid<? extends ControllableVoxel> voxels) {
+  public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
     Grid<Boolean> shape = getShape(voxels);
     poses = new ArrayList<>(PoseUtils.computeCardinalPoses(shape));
     Grid<Double> values = Grid.create(voxels, v -> 1d);
     for (int i = 0; i < isKeyPressed.size(); i++) {
       for (Grid.Key key : poses.get(i)) {
-        values.set(key.getX(), key.getY(), isKeyPressed.get(i)?-1d:1d);
+        values.set(key.x(), key.y(), isKeyPressed.get(i)?-1d:1d);
       }
     }
     return values;
