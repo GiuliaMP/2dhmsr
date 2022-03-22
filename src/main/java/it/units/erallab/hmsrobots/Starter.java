@@ -42,6 +42,7 @@ import it.units.erallab.hmsrobots.core.sensors.Lidar;
 import it.units.erallab.hmsrobots.core.sensors.Trend;
 import it.units.erallab.hmsrobots.core.sensors.Velocity;
 import it.units.erallab.hmsrobots.core.snapshots.InteractiveSnapshotListener;
+import it.units.erallab.hmsrobots.core.snapshots.JoystickSnapshotListener;
 import it.units.erallab.hmsrobots.core.snapshots.MLPState;
 import it.units.erallab.hmsrobots.tasks.Task;
 import it.units.erallab.hmsrobots.tasks.balancing.Balancing;
@@ -344,7 +345,8 @@ public class Starter {
     } catch (IOException e) {
       e.printStackTrace();
     }*/
-    locomotion.apply(robot, new InteractiveSnapshotListener(1d/60d, Drawers.basic(), basicInteractiveController));
+    //locomotion.apply(robot, new InteractiveSnapshotListener(1d/60d, Drawers.basic(), basicInteractiveController));
+    locomotion.apply(robot, new JoystickSnapshotListener(1d/60d, Drawers.basic(), basicInteractiveController));
   }
 
   private static void plainWorm() {

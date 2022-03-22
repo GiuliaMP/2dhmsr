@@ -86,6 +86,17 @@
             <artifactId>maven-shade-plugin</artifactId>
             <version>3.2.4</version>
         </dependency>
+        <dependency>
+            <groupId>net.java.jinput</groupId>
+            <artifactId>jinput</artifactId>
+            <version>2.0.9</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.jinput</groupId>
+            <artifactId>jinput</artifactId>
+            <version>2.0.9</version>
+            <classifier>natives-all</classifier>
+        </dependency>
     </dependencies>
 
     <build>
@@ -120,6 +131,10 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.googlecode.mavennatives</groupId>
+                <artifactId>maven-nativedependencies-plugin</artifactId>
             </plugin>
         </plugins>
     </build>
