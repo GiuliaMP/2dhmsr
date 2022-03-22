@@ -1,6 +1,5 @@
 package it.units.erallab.hmsrobots.core.snapshots;
 
-import it.units.erallab.hmsrobots.MyKeyListener;
 import it.units.erallab.hmsrobots.core.controllers.BasicInteractiveController;
 import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
