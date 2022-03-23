@@ -29,6 +29,8 @@ public class JoystickSnapshotListener extends JFrame implements SnapshotListener
     private StopWatch stopWatch;
     private double lastDrawT;
 
+    private List<Boolean> isKeyPressed;
+
     // Ottimizzazione: FrameT che indica ogni quanti frame vogliamo disegnare
 
     private final static int FRAME_RATE = 30;
@@ -54,6 +56,11 @@ public class JoystickSnapshotListener extends JFrame implements SnapshotListener
         setVisible(true);
         canvas.setIgnoreRepaint(true);
         canvas.createBufferStrategy(2);
+
+        isKeyPressed = new ArrayList<>();
+        for (int i = 0; i<4; i++) {
+            isKeyPressed.add(false);
+        }
 
         new Thread(new Runnable() {
             public void run() {
@@ -82,15 +89,19 @@ public class JoystickSnapshotListener extends JFrame implements SnapshotListener
                             if (!component.isAnalog()) { // Pulsantini
                                 switch (component.getIdentifier().toString()) {
                                     case "1": //X
+                                        isKeyPressed.set(1, value == 1.0);
                                         controller.setKeyPressed(value == 1.0, 1);
                                         break;
                                     case "2":// Cerchio
+                                        isKeyPressed.set(3, value == 1.0);
                                         controller.setKeyPressed(value == 1.0, 3);
                                         break;
                                     case "3": //Triangolo
+                                        isKeyPressed.set(2, value == 1.0);
                                         controller.setKeyPressed(value == 1.0, 2);
                                         break;
                                     case "0": // Quadrato
+                                        isKeyPressed.set(0, value == 1.0);
                                         controller.setKeyPressed(value == 1.0, 0);
                                         break;
                                     default:
@@ -105,8 +116,12 @@ public class JoystickSnapshotListener extends JFrame implements SnapshotListener
                                         } else if (value < -0.8){
                                             controller.setKeyPressed(true, 0);
                                         } else {
-                                            controller.setKeyPressed(false, 3);
-                                            controller.setKeyPressed(false, 0);
+                                            if (!isKeyPressed.get(3)) {
+                                                controller.setKeyPressed(false, 3);
+                                            }
+                                            if (!isKeyPressed.get(0)) {
+                                                controller.setKeyPressed(false, 0);
+                                            }
                                         }
                                         break;
                                     case "rz":
@@ -115,8 +130,12 @@ public class JoystickSnapshotListener extends JFrame implements SnapshotListener
                                         } else if (value < -0.8){
                                             controller.setKeyPressed(true, 2);
                                         } else {
-                                            controller.setKeyPressed(false, 1);
-                                            controller.setKeyPressed(false, 2);
+                                            if (!isKeyPressed.get(1)) {
+                                                controller.setKeyPressed(false, 1);
+                                            }
+                                            if (!isKeyPressed.get(2)) {
+                                                controller.setKeyPressed(false, 2);
+                                            }
                                         }
                                         break;
                                 }
