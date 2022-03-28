@@ -9,7 +9,7 @@ import java.util.*;
 
 public class BasicInteractiveController extends AbstractController {
 
-  private List<Boolean> isKeyPressed;
+  private final List<Boolean> isKeyPressed;
   List<Set<Grid.Key>>  poses;
 
   public BasicInteractiveController() {

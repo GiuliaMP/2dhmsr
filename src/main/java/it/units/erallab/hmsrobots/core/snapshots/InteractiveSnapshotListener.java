@@ -98,8 +98,7 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
 
   }
 
-  //@Override
-  //public void keyPressed(KeyEvent e) {controller.setKeyPressed(true);}
+
   @Override
   public void keyPressed(KeyEvent e) {
     switch(e.getKeyCode()){
