@@ -1,33 +1,21 @@
-package it.units.erallab.hmsrobots.core.snapshots;
+package it.units.erallab.hmsrobots.core.interactive;
 
-import it.units.erallab.hmsrobots.core.DevicePoller;
-import it.units.erallab.hmsrobots.core.controllers.BasicInteractiveController;
-import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
-import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
 import net.java.games.input.Component;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
 import net.java.games.input.Event;
 import net.java.games.input.EventQueue;
-import org.apache.commons.lang3.time.StopWatch;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferStrategy;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
-public class JoystickSnapshotListener implements DevicePoller {
+public class JoystickPoller implements DevicePoller {
     private final BasicInteractiveController controller;
 
     private List<Boolean> isKeyPressed;
 
 
-    public JoystickSnapshotListener(BasicInteractiveController controller) {
+    public JoystickPoller(BasicInteractiveController controller) {
         this.controller = controller;
     }
 

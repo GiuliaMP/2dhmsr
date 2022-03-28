@@ -33,7 +33,8 @@
 package it.units.erallab.hmsrobots;
 
 import it.units.erallab.hmsrobots.behavior.PoseUtils;
-import it.units.erallab.hmsrobots.core.DevicePoller;
+import it.units.erallab.hmsrobots.core.interactive.BasicInteractiveController;
+import it.units.erallab.hmsrobots.core.interactive.DevicePoller;
 import it.units.erallab.hmsrobots.core.controllers.*;
 import it.units.erallab.hmsrobots.core.geometry.BoundingBox;
 import it.units.erallab.hmsrobots.core.objects.Robot;
@@ -42,9 +43,8 @@ import it.units.erallab.hmsrobots.core.sensors.Angle;
 import it.units.erallab.hmsrobots.core.sensors.Lidar;
 import it.units.erallab.hmsrobots.core.sensors.Trend;
 import it.units.erallab.hmsrobots.core.sensors.Velocity;
-import it.units.erallab.hmsrobots.core.snapshots.InteractiveSnapshotListener;
-import it.units.erallab.hmsrobots.core.snapshots.JoystickSnapshotListener;
-import it.units.erallab.hmsrobots.core.snapshots.KeyboardSnapshotListener;
+import it.units.erallab.hmsrobots.core.interactive.InteractiveSnapshotListener;
+import it.units.erallab.hmsrobots.core.interactive.KeyboardPoller;
 import it.units.erallab.hmsrobots.core.snapshots.MLPState;
 import it.units.erallab.hmsrobots.tasks.devolocomotion.TimeBasedDevoLocomotion;
 import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
@@ -321,15 +321,15 @@ public class Starter {
 
     private static void multiped() {
         double f = 1d;
-        Grid<Boolean> body = RobotUtils.buildShape("biped-8x4");//Grid.create(7, 2, (x, y) -> y == 1 || (x % 2 == 0));
+        Grid<Boolean> body = RobotUtils.buildShape("biped-8x4");
         BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
         Robot robot = new Robot(
-                new SmoothedController(basicInteractiveController, 2),
+                new SmoothedController(basicInteractiveController, 5),
                 RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
         );
         Locomotion locomotion = new Locomotion(
                 120,
-                Locomotion.createTerrain("downhill-10"),
+                Locomotion.createTerrain("hilly-0.5-10-0"),
                 new Settings()
         );
     /*GridOnlineViewer.run(locomotion, robot);
@@ -341,7 +341,7 @@ public class Starter {
       e.printStackTrace();
     }*/
         //DevicePoller devicePoller = new JoystickSnapshotListener(basicInteractiveController);
-        DevicePoller devicePoller = new KeyboardSnapshotListener(basicInteractiveController);
+        DevicePoller devicePoller = new KeyboardPoller(basicInteractiveController);
         locomotion.apply(robot, new InteractiveSnapshotListener(1d/60d, Drawers.basic(), devicePoller, basicInteractiveController));
     }
 

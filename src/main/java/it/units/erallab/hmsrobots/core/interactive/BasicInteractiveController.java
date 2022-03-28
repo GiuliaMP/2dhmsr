@@ -1,6 +1,7 @@
-package it.units.erallab.hmsrobots.core.controllers;
+package it.units.erallab.hmsrobots.core.interactive;
 
 import it.units.erallab.hmsrobots.behavior.PoseUtils;
+import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.util.Grid;
 import org.apache.commons.math3.util.Pair;

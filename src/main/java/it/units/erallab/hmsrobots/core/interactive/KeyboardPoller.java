@@ -1,24 +1,13 @@
-package it.units.erallab.hmsrobots.core.snapshots;
+package it.units.erallab.hmsrobots.core.interactive;
 
-import it.units.erallab.hmsrobots.core.DevicePoller;
-import it.units.erallab.hmsrobots.core.controllers.BasicInteractiveController;
-import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
-import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
-import org.apache.commons.lang3.time.StopWatch;
-
-import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.image.BufferStrategy;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
-public class KeyboardSnapshotListener implements DevicePoller, KeyListener {
+public class KeyboardPoller implements DevicePoller, KeyListener {
   private final BasicInteractiveController controller;
 
 
-  public KeyboardSnapshotListener(BasicInteractiveController controller) {
+  public KeyboardPoller(BasicInteractiveController controller) {
     this.controller = controller;
   }
 
@@ -35,7 +24,6 @@ public class KeyboardSnapshotListener implements DevicePoller, KeyListener {
 
   @Override
   public void keyPressed(KeyEvent e) {
-    System.out.println("hello");
     switch(e.getKeyCode()){
       case KeyEvent.VK_UP:
         controller.setKeyPressed(true, 2);

@@ -1,15 +1,13 @@
-package it.units.erallab.hmsrobots.core.snapshots;
+package it.units.erallab.hmsrobots.core.interactive;
 
-import it.units.erallab.hmsrobots.core.DevicePoller;
-import it.units.erallab.hmsrobots.core.controllers.BasicInteractiveController;
+import it.units.erallab.hmsrobots.core.snapshots.Snapshot;
+import it.units.erallab.hmsrobots.core.snapshots.SnapshotListener;
 import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
 import org.apache.commons.lang3.time.StopWatch;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.image.BufferStrategy;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
