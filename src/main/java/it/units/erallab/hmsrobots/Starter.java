@@ -33,6 +33,7 @@
 package it.units.erallab.hmsrobots;
 
 import it.units.erallab.hmsrobots.behavior.PoseUtils;
+import it.units.erallab.hmsrobots.core.DevicePoller;
 import it.units.erallab.hmsrobots.core.controllers.*;
 import it.units.erallab.hmsrobots.core.geometry.BoundingBox;
 import it.units.erallab.hmsrobots.core.objects.Robot;
@@ -43,6 +44,7 @@ import it.units.erallab.hmsrobots.core.sensors.Trend;
 import it.units.erallab.hmsrobots.core.sensors.Velocity;
 import it.units.erallab.hmsrobots.core.snapshots.InteractiveSnapshotListener;
 import it.units.erallab.hmsrobots.core.snapshots.JoystickSnapshotListener;
+import it.units.erallab.hmsrobots.core.snapshots.KeyboardSnapshotListener;
 import it.units.erallab.hmsrobots.core.snapshots.MLPState;
 import it.units.erallab.hmsrobots.tasks.devolocomotion.TimeBasedDevoLocomotion;
 import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
@@ -338,8 +340,9 @@ public class Starter {
     } catch (IOException e) {
       e.printStackTrace();
     }*/
-        locomotion.apply(robot, new InteractiveSnapshotListener(1d/60d, Drawers.basic(), basicInteractiveController));
-        //locomotion.apply(robot, new JoystickSnapshotListener(1d / 60d, Drawers.basic(), basicInteractiveController));
+        //DevicePoller devicePoller = new JoystickSnapshotListener(basicInteractiveController);
+        DevicePoller devicePoller = new KeyboardSnapshotListener(basicInteractiveController);
+        locomotion.apply(robot, new InteractiveSnapshotListener(1d/60d, Drawers.basic(), devicePoller, basicInteractiveController));
     }
 
     private static void plainWorm() {
