@@ -33,24 +33,22 @@
 package it.units.erallab.hmsrobots;
 
 import it.units.erallab.hmsrobots.behavior.PoseUtils;
-import it.units.erallab.hmsrobots.core.interactive.BasicInteractiveController;
-import it.units.erallab.hmsrobots.core.interactive.DevicePoller;
 import it.units.erallab.hmsrobots.core.controllers.*;
 import it.units.erallab.hmsrobots.core.geometry.BoundingBox;
+import it.units.erallab.hmsrobots.core.interactive.BasicInteractiveController;
 import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.core.sensors.Angle;
 import it.units.erallab.hmsrobots.core.sensors.Lidar;
 import it.units.erallab.hmsrobots.core.sensors.Trend;
 import it.units.erallab.hmsrobots.core.sensors.Velocity;
-import it.units.erallab.hmsrobots.core.interactive.InteractiveSnapshotListener;
-import it.units.erallab.hmsrobots.core.interactive.KeyboardPoller;
 import it.units.erallab.hmsrobots.core.snapshots.MLPState;
 import it.units.erallab.hmsrobots.tasks.devolocomotion.TimeBasedDevoLocomotion;
 import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
 import it.units.erallab.hmsrobots.util.Grid;
 import it.units.erallab.hmsrobots.util.RobotUtils;
 import it.units.erallab.hmsrobots.util.SerializationUtils;
+import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
 import it.units.erallab.hmsrobots.viewers.GridOnlineViewer;
 import it.units.erallab.hmsrobots.viewers.NamedValue;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
@@ -59,6 +57,9 @@ import it.units.erallab.hmsrobots.viewers.drawers.MLPDrawer;
 import it.units.erallab.hmsrobots.viewers.drawers.SubtreeDrawer;
 import org.dyn4j.dynamics.Settings;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -328,21 +329,18 @@ public class Starter {
                 RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
         );
         Locomotion locomotion = new Locomotion(
-                120,
+                5,
                 Locomotion.createTerrain("hilly-0.5-10-0"),
                 new Settings()
         );
-    /*GridOnlineViewer.run(locomotion, robot);
-    FramesImageBuilder framesImageBuilder = new FramesImageBuilder(5, 7, .75, 300, 200, FramesImageBuilder.Direction.HORIZONTAL, Drawers.basic());
-    locomotion.apply(robot, framesImageBuilder);
-    try {
-      ImageIO.write(framesImageBuilder.getImage(), "png", new File("/home/eric/frames-multiped.png"));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }*/
-        //DevicePoller devicePoller = new JoystickSnapshotListener(basicInteractiveController);
-        DevicePoller devicePoller = new KeyboardPoller(basicInteractiveController);
-        locomotion.apply(robot, new InteractiveSnapshotListener(1d/60d, Drawers.basic(), devicePoller, basicInteractiveController));
+        GridOnlineViewer.run(locomotion, robot);
+        FramesImageBuilder framesImageBuilder = new FramesImageBuilder(5, 7, .75, 300, 200, FramesImageBuilder.Direction.HORIZONTAL, Drawers.basic());
+        locomotion.apply(robot, framesImageBuilder);
+        try {
+            ImageIO.write(framesImageBuilder.getImage(), "png", new File("/home/eric/frames-multiped.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static void plainWorm() {

@@ -4,7 +4,6 @@ import it.units.erallab.hmsrobots.behavior.PoseUtils;
 import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.util.Grid;
-import org.apache.commons.math3.util.Pair;
 
 import java.util.*;
 
@@ -49,4 +48,6 @@ public class BasicInteractiveController extends AbstractController {
   public void setKeyPressed(boolean keyPressed, int index) {
     this.isKeyPressed.set(index, keyPressed);
   }
+
+  public List<Boolean> getFlags() { return isKeyPressed; }
 }

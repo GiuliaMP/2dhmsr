@@ -1,5 +1,6 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
+import it.units.erallab.hmsrobots.WriteToFile;
 import it.units.erallab.hmsrobots.core.snapshots.Snapshot;
 import it.units.erallab.hmsrobots.core.snapshots.SnapshotListener;
 import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
@@ -9,19 +10,23 @@ import org.apache.commons.lang3.time.StopWatch;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public class InteractiveSnapshotListener extends JFrame implements SnapshotListener {
     private final Drawer drawer;
     private final double dT;
-    //private final BasicInteractiveController controller;
+    private final BasicInteractiveController controller;
 
     private final Canvas canvas;
     private StopWatch stopWatch;
     private double lastDrawT;
 
-    //private DevicePoller devicePoller;
+    //private List<List<Boolean>> flagHistory;
+    private SortedMap<Double, List<Boolean>> flagHistory;
 
     // Ottimizzazione: FrameT che indica ogni quanti frame vogliamo disegnare
 
@@ -34,7 +39,7 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
     public InteractiveSnapshotListener(double dT, Drawer drawer, DevicePoller devicePoller, BasicInteractiveController controller) {
         this.dT = dT;
         this.drawer = drawer;
-        //this.controller = controller;
+        this.controller = controller;
         //this.devicePoller = devicePoller;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -49,6 +54,8 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
         setVisible(true);
         canvas.setIgnoreRepaint(true);
         canvas.createBufferStrategy(2);
+
+        this.flagHistory = new TreeMap<>();
 
         devicePoller.start(controller, this);
     }
@@ -76,6 +83,8 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
                 strategy.show();
             }
             Toolkit.getDefaultToolkit().sync();
+
+            flagHistory.put(realT, controller.getFlags());
         }
 
 
@@ -93,6 +102,10 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
                 }
             }
         }
+    }
+
+    public SortedMap<Double, List<Boolean>> getFlagHistory() {
+        return flagHistory;
     }
 }
 
