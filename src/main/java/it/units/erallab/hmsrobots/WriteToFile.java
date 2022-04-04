@@ -46,25 +46,18 @@ public class WriteToFile {
                               SortedMap<Double, List<Boolean>> flagsHistory) {
         List<String> lines = new ArrayList<>();
         for (double flagTime : flagsHistory.keySet()) {
-            //for (double obsTime : observationsHistory.keySet()) {
-            //if (obsTime >= flagTime) {
-            //Point2 center = BehaviorUtils.center(observationsHistory.get(obsTime).voxelPolies().values());
-            // Riprova a tenerli come boolean
-            //Point2 center = BehaviorUtils.center(observationsHistory.get(flagTime).voxelPolies().values().stream().filter(Objects::nonNull).toList());
-            String line = String.format("%.3f;%s,%s;%s;%s",//%.2f;%.2f;%.2f",
+            Point2 center = BehaviorUtils.center(observationsHistory.get(flagTime).voxelPolies().values().stream().filter(Objects::nonNull).toList());
+            String line = String.format("%.3f;%s,%s;%s;%s%.2f;%.2f;%.2f",
                     flagTime,
                     flagsHistory.get(flagTime).get(2),
                     flagsHistory.get(flagTime).get(1),
                     flagsHistory.get(flagTime).get(0),
-                    flagsHistory.get(flagTime).get(3)
-                    //center.x(),
-                    //center.y()
-                    //observationsHistory.get(flagTime).terrainHeight()
+                    flagsHistory.get(flagTime).get(3),
+                    center.x(),
+                    center.y(),
+                    observationsHistory.get(flagTime).terrainHeight()
             );
             lines.add(line);
-            //break;
-            //}
-            //}
         }
         file = check(file);
         try {
