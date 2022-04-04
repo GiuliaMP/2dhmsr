@@ -15,7 +15,6 @@ import org.dyn4j.dynamics.Settings;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 
 public class InteractiveStarter {
@@ -29,11 +28,10 @@ public class InteractiveStarter {
         Grid<Boolean> body = RobotUtils.buildShape("biped-8x4");
         BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
         Robot robot = new Robot(
-                new SmoothedController(basicInteractiveController, 5),
+                new SmoothedController(basicInteractiveController, 3),
                 RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
         );
-        Locomotion locomotion = new Locomotion(
-                5,
+        Locomotion locomotion = new Locomotion(5,
                 Locomotion.createTerrain("hilly-0.5-10-0"),
                 new Settings()
         );
@@ -44,10 +42,9 @@ public class InteractiveStarter {
         Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
         SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
         SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
+        System.out.println(flagsHistory);
 
-        System.out.println(flagsHistory.keySet());
-
-        File file = new File("Prova.csv");
+        File file = new File("DatiUtili.csv");
         WriteToFile.toFile(file, observationsHistory, flagsHistory);
     }
 }

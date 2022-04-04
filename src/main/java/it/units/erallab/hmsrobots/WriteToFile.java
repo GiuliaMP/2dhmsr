@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.SortedMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,26 +44,32 @@ public class WriteToFile {
 
     public static void toFile(File file, SortedMap<Double, Outcome.Observation> observationsHistory,
                               SortedMap<Double, List<Boolean>> flagsHistory) {
-        List<String> lines = new ArrayList<>(); //history = new ArrayList<>()
+        List<String> lines = new ArrayList<>();
         for (double flagTime : flagsHistory.keySet()) {
-            for (double obsTime : observationsHistory.keySet()) {
-                if (obsTime > flagTime) {
-                    //Point2 centre = BehaviorUtils.center(observationsHistory.get(obsTime).voxelPolies().values());
-                    String up = String.valueOf(flagsHistory.get(flagTime).get(2));
-                    String down = String.valueOf(flagsHistory.get(flagTime).get(1));
-                    String left = String.valueOf(flagsHistory.get(flagTime).get(0));
-                    String right = String.valueOf(flagsHistory.get(flagTime).get(3));
-                    String line = flagTime + ";" + up+ ";" + down+ ";" + left+ ";" + right;
-                    
-                    lines.add(line);
-                    break;
-                }
-            }
+            //for (double obsTime : observationsHistory.keySet()) {
+            //if (obsTime >= flagTime) {
+            //Point2 center = BehaviorUtils.center(observationsHistory.get(obsTime).voxelPolies().values());
+            // Riprova a tenerli come boolean
+            //Point2 center = BehaviorUtils.center(observationsHistory.get(flagTime).voxelPolies().values().stream().filter(Objects::nonNull).toList());
+            String line = String.format("%.3f;%s,%s;%s;%s",//%.2f;%.2f;%.2f",
+                    flagTime,
+                    flagsHistory.get(flagTime).get(2),
+                    flagsHistory.get(flagTime).get(1),
+                    flagsHistory.get(flagTime).get(0),
+                    flagsHistory.get(flagTime).get(3)
+                    //center.x(),
+                    //center.y()
+                    //observationsHistory.get(flagTime).terrainHeight()
+            );
+            lines.add(line);
+            //break;
+            //}
+            //}
         }
         file = check(file);
         try {
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write("time;up;down;left;right" + System.lineSeparator()); //time;centreX;centreY;heightY;up;down;left;right
+            fileWriter.write("time;up;down;left;right;centreX;centreY;heightY" + System.lineSeparator());
             for (String line : lines) {
                 fileWriter.write(line + System.lineSeparator());
             }

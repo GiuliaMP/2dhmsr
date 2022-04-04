@@ -84,7 +84,8 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
             }
             Toolkit.getDefaultToolkit().sync();
 
-            flagHistory.put(realT, controller.getFlags());
+            List<Boolean> flags = new ArrayList<>(controller.getFlags());
+            flagHistory.putIfAbsent(simT, flags);
         }
 
 
