@@ -32,8 +32,8 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
 
     private final static int FRAME_RATE = 30;
     private static final Logger L = Logger.getLogger(FramesImageBuilder.class.getName());
-    private final static int INIT_WIN_WIDTH = 400;
-    private final static int INIT_WIN_HEIGHT = 300;
+    private final static int INIT_WIN_WIDTH = 600;
+    private final static int INIT_WIN_HEIGHT = 500;
 
 
     public InteractiveSnapshotListener(double dT, Drawer drawer, DevicePoller devicePoller, BasicInteractiveController controller) {
@@ -51,6 +51,7 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
         getContentPane().add(canvas, BorderLayout.CENTER);
         //pack
         pack();
+        setLocationRelativeTo(null);
         setVisible(true);
         canvas.setIgnoreRepaint(true);
         canvas.createBufferStrategy(2);

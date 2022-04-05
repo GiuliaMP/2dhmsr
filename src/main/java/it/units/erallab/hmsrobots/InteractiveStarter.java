@@ -40,12 +40,10 @@ public class InteractiveStarter {
         DevicePoller devicePoller = new KeyboardPoller(basicInteractiveController);
         InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d, Drawers.basic(), devicePoller, basicInteractiveController);
         Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
-        SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
+        /*SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
         SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
-        System.out.println(flagsHistory);
-
-        File file = new File("DatiUtili.csv");
-        WriteToFile.toFile(file, observationsHistory, flagsHistory);
+        //File file = new File("DatiUtili.csv");
+        //WriteToFile.toFile(file, observationsHistory, flagsHistory);*/
     }
 }
 
