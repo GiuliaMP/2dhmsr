@@ -3,6 +3,7 @@ package it.units.erallab.hmsrobots.core.interactive;
 import it.units.erallab.hmsrobots.WriteToFile;
 import it.units.erallab.hmsrobots.core.snapshots.Snapshot;
 import it.units.erallab.hmsrobots.core.snapshots.SnapshotListener;
+import it.units.erallab.hmsrobots.viewers.DrawingUtils;
 import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
 import org.apache.commons.lang3.time.StopWatch;
@@ -21,12 +22,15 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
     private final double dT;
     private final BasicInteractiveController controller;
 
-    private final Canvas canvas;
+    private final Canvas canvas; // Riceve già un Canvasa
     private StopWatch stopWatch;
     private double lastDrawT;
 
     //private List<List<Boolean>> flagHistory;
     private SortedMap<Double, List<Boolean>> flagHistory;
+
+    private int totalTime;
+    private boolean provaFlag;
 
     // Ottimizzazione: FrameT che indica ogni quanti frame vogliamo disegnare
 
@@ -36,11 +40,18 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
     private final static int INIT_WIN_HEIGHT = 500;
 
 
-    public InteractiveSnapshotListener(double dT, Drawer drawer, DevicePoller devicePoller, BasicInteractiveController controller) {
+    public InteractiveSnapshotListener(double dT, Drawer drawer,
+                                       DevicePoller devicePoller,
+                                       BasicInteractiveController controller,
+                                       int totalTime,
+                                       boolean provaFlag) {
         this.dT = dT;
         this.drawer = drawer;
         this.controller = controller;
         //this.devicePoller = devicePoller;
+
+        this.totalTime = totalTime;
+        this.provaFlag = provaFlag;
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Dimension dimension = new Dimension(INIT_WIN_WIDTH, INIT_WIN_HEIGHT);
@@ -49,6 +60,7 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
         canvas.setMinimumSize(dimension);
         canvas.setMaximumSize(dimension);
         getContentPane().add(canvas, BorderLayout.CENTER);
+
         //pack
         pack();
         setLocationRelativeTo(null);
@@ -78,6 +90,18 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
             Graphics2D g = (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
             g.setClip(0, 0, canvas.getWidth(), canvas.getHeight());
             drawer.draw(simT, s, g);
+
+            String timerString = ""+(totalTime-(int)simT);
+            Drawer timerDrawer = Drawer.text(timerString, DrawingUtils.Alignment.RIGHT, Color.BLACK);
+            timerDrawer.draw(simT, s, g);
+
+            String provaString = provaFlag? "Training":"Do your best now";
+            Drawer provaDrawer = Drawer.text(provaString, DrawingUtils.Alignment.CENTER, Color.BLACK);
+            provaDrawer.draw(simT, s, g);
+
+            g.setColor(Color.RED);
+
+
             g.dispose();
             BufferStrategy strategy = canvas.getBufferStrategy();
             if (!strategy.contentsLost()) {
