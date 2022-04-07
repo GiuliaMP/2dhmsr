@@ -25,8 +25,6 @@ public class InteractiveStarter {
     // Flag start sui poller che quando premo un tasto fa partire tutto
     // InteractiveSnapshotListener ascolta la flag start e disegna/fa partire le cose giuste al momento giusto
 
-    //Suo costruttore che init tutto e extend JFrame e un run, il vero main la crea e basta
-    // g con canale alpha
     public static void main(String[] args) { // Nome, robot, device
         String name = args[0];
         String robotType = args[1];

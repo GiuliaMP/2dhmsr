@@ -91,15 +91,17 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
             g.setClip(0, 0, canvas.getWidth(), canvas.getHeight());
             drawer.draw(simT, s, g);
 
+            // Useful informations for the user
+            g.setColor(Color.RED);
             String timerString = ""+(totalTime-(int)simT);
-            Drawer timerDrawer = Drawer.text(timerString, DrawingUtils.Alignment.RIGHT, Color.BLACK);
-            timerDrawer.draw(simT, s, g);
+            g.drawString(timerString,
+                    g.getClipBounds().x + g.getClipBounds().width - 1 - g.getFontMetrics().stringWidth(timerString),
+                    g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
 
             String provaString = provaFlag? "Training":"Do your best now";
-            Drawer provaDrawer = Drawer.text(provaString, DrawingUtils.Alignment.CENTER, Color.BLACK);
-            provaDrawer.draw(simT, s, g);
-
-            g.setColor(Color.RED);
+            g.drawString(provaString,
+                    g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(provaString) / 2,
+                    g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
 
 
             g.dispose();
