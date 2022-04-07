@@ -9,7 +9,7 @@ public class InteractiveStarter {
         String robotType = args[1];
         String device = args[2];
 
-        RunManager manager = new RunManager(name, robotType,device);
+        new RunManager(name, robotType,device);
     }
 }
 

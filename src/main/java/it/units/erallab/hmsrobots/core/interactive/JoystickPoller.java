@@ -13,6 +13,7 @@ public class JoystickPoller implements DevicePoller {
     private final BasicInteractiveController controller;
 
     private List<Boolean> isKeyPressed;
+    private boolean enabledFlag;
 
 
     public JoystickPoller(BasicInteractiveController controller) {
@@ -122,6 +123,11 @@ public class JoystickPoller implements DevicePoller {
                 }
             }
         }).start();
+    }
+
+    @Override
+    public void setEnabledFlag(boolean flag) {
+        enabledFlag = flag;
     }
 }
 

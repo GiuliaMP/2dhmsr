@@ -11,6 +11,7 @@ public class BasicInteractiveController extends AbstractController {
 
   private final List<Boolean> isKeyPressed;
   List<Set<Grid.Key>>  poses;
+  private boolean enabledFlag;
 
   public BasicInteractiveController() {
     isKeyPressed = new ArrayList<>();
