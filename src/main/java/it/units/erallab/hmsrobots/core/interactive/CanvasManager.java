@@ -8,7 +8,7 @@ import java.awt.*;
 public class CanvasManager extends JFrame {
 
     private final Drawer drawer;
-    private final Canvas canvas; // Riceve già un Canvasa
+    private final Canvas canvas;
 
     private final static int INIT_WIN_WIDTH = 600;
     private final static int INIT_WIN_HEIGHT = 500;

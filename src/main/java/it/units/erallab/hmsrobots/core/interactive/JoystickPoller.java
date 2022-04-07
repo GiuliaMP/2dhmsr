@@ -30,6 +30,7 @@ public class JoystickPoller implements DevicePoller {
         new Thread(new Runnable() {
             public void run() {
 
+                //if (!enabledFlag) vedi se può stare nel while
                 while (true) {
 
                     Controller[] controllers = ControllerEnvironment

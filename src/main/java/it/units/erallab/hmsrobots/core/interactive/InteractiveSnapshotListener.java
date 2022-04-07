@@ -75,7 +75,10 @@ public class InteractiveSnapshotListener implements SnapshotListener {
         Canvas canvas = canvasManager.getCanvas();
 
         if (lastDrawT == 0.0d || lastDrawT + frameDT <= realT){
+
+            // Sistema insieme  a questo anche la grafica
             devicePoller.setEnabledFlag(realT < 3);
+
             lastDrawT = realT;
             // Draw
             //Drawer drawer = canvasManager.getDrawer();
