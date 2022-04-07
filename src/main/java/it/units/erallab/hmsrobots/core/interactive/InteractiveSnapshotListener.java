@@ -92,7 +92,7 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
             drawer.draw(simT, s, g);
 
             // Useful informations for the user
-            g.setColor(Color.RED);
+            g.setColor(DrawingUtils.alphaed(Color.RED,0.9f));
             String timerString = ""+(totalTime-(int)simT);
             g.drawString(timerString,
                     g.getClipBounds().x + g.getClipBounds().width - 1 - g.getFontMetrics().stringWidth(timerString),
