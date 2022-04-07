@@ -2,10 +2,7 @@ package it.units.erallab.hmsrobots;
 
 import it.units.erallab.hmsrobots.core.controllers.SmoothedController;
 import it.units.erallab.hmsrobots.core.controllers.TimeFunctions;
-import it.units.erallab.hmsrobots.core.interactive.BasicInteractiveController;
-import it.units.erallab.hmsrobots.core.interactive.DevicePoller;
-import it.units.erallab.hmsrobots.core.interactive.InteractiveSnapshotListener;
-import it.units.erallab.hmsrobots.core.interactive.KeyboardPoller;
+import it.units.erallab.hmsrobots.core.interactive.*;
 import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
@@ -28,24 +25,33 @@ public class InteractiveStarter {
     // Flag start sui poller che quando premo un tasto fa partire tutto
     // InteractiveSnapshotListener ascolta la flag start e disegna/fa partire le cose giuste al momento giusto
 
-    //Linea di comando: robot da usare e device e nome utente
     //Suo costruttore che init tutto e extend JFrame e un run, il vero main la crea e basta
     // g con canale alpha
-    public static void main(String[] args) {
-        multiped(5, true);
-        try
-        {
-            Thread.sleep(1000);
+    public static void main(String[] args) { // Nome, robot, device
+        String name = args[0];
+        String robotType = args[1];
+        String device = args[2];
+
+        if (robotType.equals("Multiped")) {
+            multiped(5, true, name, device);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            multiped(10, false, name, device);
+        } else {
+            plainWorm(5, true, name, device);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            plainWorm(10, false, name, device);
         }
-        catch(InterruptedException ex)
-        {
-            Thread.currentThread().interrupt();
-        }
-        multiped(10, false);
-        //plainWorm(5);
     }
 
-    private static void multiped(int totalTime, boolean provaFlag) {
+    private static void multiped(int totalTime, boolean provaFlag, String fileName, String device) {
         double f = 1d;
         Grid<Boolean> body = RobotUtils.buildShape("biped-8x4");
         BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
@@ -58,20 +64,21 @@ public class InteractiveStarter {
                 new Settings()
         );
 
-        //DevicePoller devicePoller = new JoystickSnapshotListener(basicInteractiveController);
-        DevicePoller devicePoller = new KeyboardPoller(basicInteractiveController);
+        DevicePoller devicePoller = (device.equals("Keyboard"))?
+                new KeyboardPoller(basicInteractiveController):
+                new JoystickPoller(basicInteractiveController);
         InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
                 Drawers.basic(), devicePoller, basicInteractiveController, totalTime, provaFlag);
         Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
         if (!provaFlag) {
             SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
             SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
-            File file = new File("DatiUtiliMultiped.csv");
+            File file = new File("Dati"+fileName+".csv");
             WriteToFile.toFile(file, observationsHistory, flagsHistory);
         }
     }
 
-    private static void plainWorm(int totalTime, boolean provaFlag) {
+    private static void plainWorm(int totalTime, boolean provaFlag, String fileName, String device) {
         double f = 1d;
         Grid<Boolean> body = RobotUtils.buildShape("worm-8x2");
         BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
@@ -92,7 +99,7 @@ public class InteractiveStarter {
         if (!provaFlag) {
             SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
             SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
-            File file = new File("DatiUtiliPlainWorm.csv");
+            File file = new File("Dati"+fileName+".csv");
             WriteToFile.toFile(file, observationsHistory, flagsHistory);
         }
     }
