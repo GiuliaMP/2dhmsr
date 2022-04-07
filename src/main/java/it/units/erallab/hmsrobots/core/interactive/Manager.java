@@ -1,36 +1,51 @@
-package it.units.erallab.hmsrobots;
+package it.units.erallab.hmsrobots.core.interactive;
 
+import it.units.erallab.hmsrobots.WriteToFile;
 import it.units.erallab.hmsrobots.core.controllers.SmoothedController;
-import it.units.erallab.hmsrobots.core.controllers.TimeFunctions;
-import it.units.erallab.hmsrobots.core.interactive.*;
 import it.units.erallab.hmsrobots.core.objects.Robot;
-import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
 import it.units.erallab.hmsrobots.tasks.locomotion.Outcome;
 import it.units.erallab.hmsrobots.util.Grid;
 import it.units.erallab.hmsrobots.util.RobotUtils;
-import it.units.erallab.hmsrobots.util.SerializationUtils;
-import it.units.erallab.hmsrobots.viewers.GridOnlineViewer;
-import it.units.erallab.hmsrobots.viewers.NamedValue;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawers;
 import org.dyn4j.dynamics.Settings;
 
 import java.io.File;
 import java.util.List;
-import java.util.Random;
 import java.util.SortedMap;
 
-public class InteractiveStarter {
+public class Manager {
 
-    // Flag start sui poller che quando premo un tasto fa partire tutto
-    // InteractiveSnapshotListener ascolta la flag start e disegna/fa partire le cose giuste al momento giusto
+    private final String name;
+    private final String robotType;
+    private final String device;
 
-    public static void main(String[] args) { // Nome, robot, device
-        String name = args[0];
-        String robotType = args[1];
-        String device = args[2];
+    public Manager(String name, String robotType, String device) {
+        this.name = name;
+        this.robotType = robotType;
+        this.device = device;
 
-        Manager manager = new Manager(name, robotType,device);
+        run();
+    }
+
+    private void run() {
+        if (robotType.equals("Multiped")) {
+            multiped(5, true, name, device);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            multiped(10, false, name, device);
+        } else {
+            plainWorm(5, true, name, device);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                Thread.currentThread().interrupt();
+            }
+            plainWorm(10, false, name, device);
+        }
     }
 
     private static void multiped(int totalTime, boolean provaFlag, String fileName, String device) {
@@ -85,5 +100,8 @@ public class InteractiveStarter {
             WriteToFile.toFile(file, observationsHistory, flagsHistory);
         }
     }
-}
 
+
+
+
+}
