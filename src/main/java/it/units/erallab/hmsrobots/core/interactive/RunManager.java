@@ -10,20 +10,23 @@ import it.units.erallab.hmsrobots.util.RobotUtils;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawers;
 import org.dyn4j.dynamics.Settings;
 
+import javax.swing.*;
 import java.io.File;
 import java.util.List;
 import java.util.SortedMap;
 
-public class Manager {
+public class RunManager {
 
     private final String name;
     private final String robotType;
     private final String device;
+    private final CanvasManager canvasManager;
 
-    public Manager(String name, String robotType, String device) {
+    public RunManager(String name, String robotType, String device) {
         this.name = name;
         this.robotType = robotType;
         this.device = device;
+        this.canvasManager = new CanvasManager(Drawers.basic());
 
         run();
     }
@@ -48,7 +51,7 @@ public class Manager {
         }
     }
 
-    private static void multiped(int totalTime, boolean provaFlag, String fileName, String device) {
+    private void multiped(int totalTime, boolean provaFlag, String fileName, String device) {
         double f = 1d;
         Grid<Boolean> body = RobotUtils.buildShape("biped-8x4");
         BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
@@ -65,7 +68,7 @@ public class Manager {
                 new KeyboardPoller(basicInteractiveController):
                 new JoystickPoller(basicInteractiveController);
         InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
-                Drawers.basic(), devicePoller, basicInteractiveController, totalTime, provaFlag);
+                canvasManager, devicePoller, basicInteractiveController, totalTime, provaFlag);
         Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
         if (!provaFlag) {
             SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
@@ -75,7 +78,7 @@ public class Manager {
         }
     }
 
-    private static void plainWorm(int totalTime, boolean provaFlag, String fileName, String device) {
+    private void plainWorm(int totalTime, boolean provaFlag, String fileName, String device) {
         double f = 1d;
         Grid<Boolean> body = RobotUtils.buildShape("worm-8x2");
         BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
@@ -91,7 +94,7 @@ public class Manager {
         //DevicePoller devicePoller = new JoystickSnapshotListener(basicInteractiveController);
         DevicePoller devicePoller = new KeyboardPoller(basicInteractiveController);
         InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
-                Drawers.basic(), devicePoller, basicInteractiveController, totalTime, provaFlag);
+                canvasManager, devicePoller, basicInteractiveController, totalTime, provaFlag);
         Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
         if (!provaFlag) {
             SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();

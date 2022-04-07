@@ -20,7 +20,7 @@ public class JoystickPoller implements DevicePoller {
     }
 
     @Override
-    public void start(BasicInteractiveController controller, InteractiveSnapshotListener interactiveSnapshotListener) {
+    public void start(BasicInteractiveController controller, CanvasManager canvasManager) {
         isKeyPressed = new ArrayList<>();
         for (int i = 0; i<4; i++) {
             isKeyPressed.add(false);

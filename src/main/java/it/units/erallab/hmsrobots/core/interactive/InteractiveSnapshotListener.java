@@ -17,12 +17,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-public class InteractiveSnapshotListener extends JFrame implements SnapshotListener {
-    private final Drawer drawer;
+public class InteractiveSnapshotListener implements SnapshotListener {
     private final double dT;
     private final BasicInteractiveController controller;
+    private final CanvasManager canvasManager;
 
-    private final Canvas canvas; // Riceve già un Canvasa
     private StopWatch stopWatch;
     private double lastDrawT;
 
@@ -40,37 +39,22 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
     private final static int INIT_WIN_HEIGHT = 500;
 
 
-    public InteractiveSnapshotListener(double dT, Drawer drawer,
+    public InteractiveSnapshotListener(double dT, CanvasManager canvasManager,
                                        DevicePoller devicePoller,
                                        BasicInteractiveController controller,
                                        int totalTime,
                                        boolean provaFlag) {
         this.dT = dT;
-        this.drawer = drawer;
+        this.canvasManager = canvasManager;
         this.controller = controller;
         //this.devicePoller = devicePoller;
 
         this.totalTime = totalTime;
         this.provaFlag = provaFlag;
 
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        Dimension dimension = new Dimension(INIT_WIN_WIDTH, INIT_WIN_HEIGHT);
-        canvas = new Canvas();
-        canvas.setPreferredSize(dimension);
-        canvas.setMinimumSize(dimension);
-        canvas.setMaximumSize(dimension);
-        getContentPane().add(canvas, BorderLayout.CENTER);
-
-        //pack
-        pack();
-        setLocationRelativeTo(null);
-        setVisible(true);
-        canvas.setIgnoreRepaint(true);
-        canvas.createBufferStrategy(2);
-
         this.flagHistory = new TreeMap<>();
 
-        devicePoller.start(controller, this);
+        devicePoller.start(controller, canvasManager);
     }
 
     @Override
@@ -87,6 +71,8 @@ public class InteractiveSnapshotListener extends JFrame implements SnapshotListe
         if (lastDrawT == 0.0d || lastDrawT + frameDT <= realT){
             lastDrawT = realT;
             // Draw
+            Drawer drawer = canvasManager.getDrawer();
+            Canvas canvas = canvasManager.getCanvas();
             Graphics2D g = (Graphics2D) canvas.getBufferStrategy().getDrawGraphics();
             g.setClip(0, 0, canvas.getWidth(), canvas.getHeight());
             drawer.draw(simT, s, g);
