@@ -1,4 +1,4 @@
-package it.units.erallab.hmsrobots;
+package it.units.erallab.hmsrobots.core.interactive;
 
 import it.units.erallab.hmsrobots.behavior.BehaviorUtils;
 import it.units.erallab.hmsrobots.core.geometry.Point2;
