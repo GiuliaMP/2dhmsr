@@ -22,13 +22,15 @@ public class RunManager {
   private final String robotType;
   private final String device;
   private final boolean writeToFile;
+  private boolean withoutTraining;
   private final CanvasManager canvasManager;
 
-  public RunManager(String name, String robotType, String device, String writeToFile) {
+  public RunManager(String name, String robotType, String device, String writeToFile, String withoutTraining) {
     this.name = name;
     this.robotType = robotType;
     this.device = device;
     this.writeToFile = Boolean.parseBoolean(writeToFile);
+    this.withoutTraining = Boolean.parseBoolean(withoutTraining);
     this.canvasManager = new CanvasManager(() ->
         Drawer.of(
             Drawer.clear(),
@@ -45,7 +47,11 @@ public class RunManager {
   }
 
   private void run() {
-    doSession(30 + 3, true, name, robotType, device, writeToFile);
+    // Training = 60s
+    // Play = 30s
+    if (!withoutTraining) {
+      doSession(5 + 3, true, name, robotType, device, writeToFile);
+    }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
@@ -55,7 +61,7 @@ public class RunManager {
   }
 
   // Metti un po' di discesa
-  private void doSession(int totalTime, boolean provaFlag, String fileName, String robotType, String device, boolean writeToFile) {
+  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, boolean writeToFile) {
     double f = 1d;
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-4x3" : "worm-8x2");
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
@@ -73,9 +79,9 @@ public class RunManager {
         new JoystickPoller(basicInteractiveController);
     canvasManager.rebuildDrawer();
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
-        canvasManager, devicePoller, basicInteractiveController, totalTime, provaFlag);
+        canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
-    if (!provaFlag) {
+    if (!trainingFlag) {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
       SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
       if (writeToFile) {
