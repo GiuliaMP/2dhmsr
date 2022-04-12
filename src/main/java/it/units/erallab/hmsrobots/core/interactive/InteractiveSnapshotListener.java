@@ -1,10 +1,15 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
+import it.units.erallab.hmsrobots.core.geometry.Point2;
+import it.units.erallab.hmsrobots.core.objects.Robot;
+import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.core.snapshots.Snapshot;
 import it.units.erallab.hmsrobots.core.snapshots.SnapshotListener;
+import it.units.erallab.hmsrobots.core.snapshots.VoxelPoly;
 import it.units.erallab.hmsrobots.viewers.DrawingUtils;
 import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
+import it.units.erallab.hmsrobots.viewers.drawers.SubtreeDrawer;
 import org.apache.commons.lang3.time.StopWatch;
 
 import java.awt.*;
@@ -23,14 +28,17 @@ public class InteractiveSnapshotListener implements SnapshotListener {
   private final BasicInteractiveController controller;
   private final CanvasManager canvasManager;
   private final DevicePoller devicePoller;
-  private StopWatch stopWatch;
-
-  // Ottimizzazione: FrameT che indica ogni quanti frame vogliamo disegnare
-  private double lastDrawT;
-  //private List<List<Boolean>> flagHistory;
   private final SortedMap<Double, List<Boolean>> flagHistory;
   private final int totalTime;
   private final boolean provaFlag;
+  private StopWatch stopWatch;
+  // Ottimizzazione: FrameT che indica ogni quanti frame vogliamo disegnare
+  private double lastDrawT;
+
+  private double prevT;
+  private Double firstX;
+  private int velocityCounter;
+  private double cumulativeVelocity;
 
 
   public InteractiveSnapshotListener(double dT, CanvasManager canvasManager,
@@ -48,7 +56,35 @@ public class InteractiveSnapshotListener implements SnapshotListener {
 
     this.flagHistory = new TreeMap<>();
 
+    prevT = 0;
+    firstX = null;
+
+    velocityCounter = 0;
+    cumulativeVelocity = 0;
+
     devicePoller.start(controller, canvasManager);
+  }
+
+  private double extractXVelocity(double simT, double prevT, Snapshot snapshot) {
+    double windowT = simT - prevT;
+    double velocity = 0.0;
+    //collect robots info
+    //get centers
+    List<Point2> currentCenterPositions = SubtreeDrawer.Extractor.matches(null, Robot.class, null)
+        .extract(snapshot)
+        .stream()
+        .map(s -> Point2.average(
+            s.getChildren().stream()
+                .filter(c -> Voxel.class.isAssignableFrom(c.getSnapshottableClass()))
+                .map(c -> ((VoxelPoly) c.getContent()).center())
+                .toArray(Point2[]::new))
+        )
+        .toList();
+    double currentX = currentCenterPositions.get(0).x();
+    if (firstX == null) {
+      firstX = currentX;
+    }
+    return currentX-firstX;
   }
 
   @Override
@@ -72,6 +108,10 @@ public class InteractiveSnapshotListener implements SnapshotListener {
 
       g.setColor(DrawingUtils.alphaed(Color.BLACK, 0.9f));
       if (realT < 3) {
+
+        velocityCounter = 0;
+        cumulativeVelocity = 0;
+
         devicePoller.setEnabledFlag(true);
         // Useful informations for the user
         // Timer
@@ -81,16 +121,13 @@ public class InteractiveSnapshotListener implements SnapshotListener {
             g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(timerString) / 2,
             g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(timerString) / 2);
         // Title
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         String titleString = "Ready to start in:";
         g.drawString(titleString,
             g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(titleString) / 2,
             g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
-      } else {
-
+      } else if (realT <= totalTime) {
         devicePoller.setEnabledFlag(false);
-
-        lastDrawT = realT;
         // Draw
         // Useful informations for the user
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
@@ -100,11 +137,39 @@ public class InteractiveSnapshotListener implements SnapshotListener {
             g.getClipBounds().x + g.getClipBounds().width - 1 - g.getFontMetrics().stringWidth(timerString) - 30,
             g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
 
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
         String provaString = provaFlag ? "Training" : "Do your best now";
         g.drawString(provaString,
             g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(provaString) / 2,
             g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
+
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        double velocity = extractXVelocity(simT, this.prevT, s);
+        String velocityX = String.format("Velocity = %.1f",velocity);
+        cumulativeVelocity+=velocity;
+        velocityCounter++;
+        g.drawString(velocityX,
+            g.getClipBounds().x + 1,
+            g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent()+30);
+        this.prevT = simT;
+      } else if (!provaFlag){ // Non esce sempre, come si potrebbe fare?
+
+        lastDrawT = realT;
+
+        String endString = "End";
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
+        g.drawString(endString,
+            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(endString) / 2,
+            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(endString) / 2+30);
+
+        // stampa distanza max
+        double meanVelocity = cumulativeVelocity /velocityCounter;
+        String meanVelocityString = String.format("Your average velocity is = %.1f",meanVelocity);
+        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
+        g.drawString(meanVelocityString,
+            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(meanVelocityString) / 2,
+            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(meanVelocityString) / 2);
+
       }
 
       g.dispose();

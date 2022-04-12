@@ -1,4 +1,4 @@
-package it.units.erallab.hmsrobots;
+package it.units.erallab.hmsrobots.core.interactive;
 
 import it.units.erallab.hmsrobots.core.interactive.*;
 
@@ -8,8 +8,9 @@ public class InteractiveStarter {
         String name = args[0];
         String robotType = args[1];
         String device = args[2];
+        String writeToFile = args[3];
 
-        new RunManager(name, robotType,device);
+        new RunManager(name, robotType,device, writeToFile);
     }
 }
 

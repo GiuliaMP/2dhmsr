@@ -13,6 +13,7 @@ import org.dyn4j.dynamics.Settings;
 
 import java.io.File;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 
 public class RunManager {
@@ -20,16 +21,17 @@ public class RunManager {
   private final String name;
   private final String robotType;
   private final String device;
+  private final boolean writeToFile;
   private final CanvasManager canvasManager;
 
-  public RunManager(String name, String robotType, String device) {
+  public RunManager(String name, String robotType, String device, String writeToFile) {
     this.name = name;
     this.robotType = robotType;
     this.device = device;
-    this.canvasManager = new CanvasManager(
+    this.writeToFile = Boolean.parseBoolean(writeToFile);
+    this.canvasManager = new CanvasManager(() ->
         Drawer.of(
             Drawer.clear(),
-            //Drawers.basic(),
             Drawer.transform(
                 new AllRobotFollower(1.5d, 3),
                 Drawer.of(
@@ -43,18 +45,19 @@ public class RunManager {
   }
 
   private void run() {
-    doSession(5 + 3, true, name, robotType, device);
+    doSession(30 + 3, true, name, robotType, device, writeToFile);
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(10 + 3, false, name, robotType, device);
+    doSession(60 + 3, false, name, robotType, device, writeToFile);
   }
 
-  private void doSession(int totalTime, boolean provaFlag, String fileName, String robotType, String device) {
+  // Metti un po' di discesa
+  private void doSession(int totalTime, boolean provaFlag, String fileName, String robotType, String device, boolean writeToFile) {
     double f = 1d;
-    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-8x4" : "worm-8x2");
+    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-4x3" : "worm-8x2");
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 3),
@@ -68,40 +71,17 @@ public class RunManager {
     DevicePoller devicePoller = (device.equals("Keyboard")) ?
         new KeyboardPoller(basicInteractiveController) :
         new JoystickPoller(basicInteractiveController);
+    canvasManager.rebuildDrawer();
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
         canvasManager, devicePoller, basicInteractiveController, totalTime, provaFlag);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
     if (!provaFlag) {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
       SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
-      File file = new File("Dati" + fileName + ".csv");
-      WriteToFile.toFile(file, observationsHistory, flagsHistory);
-    }
-  }
-
-  private void plainWorm(int totalTime, boolean provaFlag, String fileName, String device) {
-    double f = 1d;
-    Grid<Boolean> body = RobotUtils.buildShape("worm-8x2");
-    BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
-    Robot robot = new Robot(
-        new SmoothedController(basicInteractiveController, 3),
-        RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
-    );
-    Locomotion locomotion = new Locomotion(5,
-        Locomotion.createTerrain("hilly-0.5-10-0"),
-        new Settings()
-    );
-
-    //DevicePoller devicePoller = new JoystickSnapshotListener(basicInteractiveController);
-    DevicePoller devicePoller = new KeyboardPoller(basicInteractiveController);
-    InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
-        canvasManager, devicePoller, basicInteractiveController, totalTime, provaFlag);
-    Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
-    if (!provaFlag) {
-      SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
-      SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
-      File file = new File("Dati" + fileName + ".csv");
-      WriteToFile.toFile(file, observationsHistory, flagsHistory);
+      if (writeToFile) {
+        File file = new File("Dati" + fileName + ".csv");
+        WriteToFile.toFile(file, observationsHistory, flagsHistory);
+      }
     }
   }
 
