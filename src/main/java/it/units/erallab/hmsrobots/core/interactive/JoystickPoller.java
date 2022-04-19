@@ -9,7 +9,6 @@ public class JoystickPoller implements DevicePoller {
   private final BasicInteractiveController controller;
 
   private List<Boolean> isKeyPressed;
-  private boolean enabledFlag;
 
 
   public JoystickPoller(BasicInteractiveController controller) {
@@ -26,7 +25,6 @@ public class JoystickPoller implements DevicePoller {
     new Thread(new Runnable() {
       public void run() {
 
-        //if (!enabledFlag) vedi se può stare nel while
         while (true) {
 
           Controller[] controllers = ControllerEnvironment
