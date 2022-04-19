@@ -102,7 +102,6 @@ public class InteractiveSnapshotListener implements SnapshotListener {
       g.setColor(DrawingUtils.alphaed(Color.BLACK, 0.9f));
       if (realT < 3) {
 
-        devicePoller.setEnabledFlag(false);
         // Useful informations for the user
         // Timer
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
@@ -117,7 +116,6 @@ public class InteractiveSnapshotListener implements SnapshotListener {
             g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(titleString) / 2,
             g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
       } else if (realT < totalTime) {
-        devicePoller.setEnabledFlag(false);
         // Draw
         // Useful informations for the user
         g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));

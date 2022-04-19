@@ -69,9 +69,4 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
       }
     }
   }
-
-  @Override
-  public void setEnabledFlag(boolean enabledFlag) {
-    this.enabledFlag = enabledFlag;
-  }
 }
