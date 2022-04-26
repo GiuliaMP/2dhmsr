@@ -154,17 +154,19 @@ public class InteractiveSnapshotListener implements SnapshotListener {
         lastDrawT = realT;
 
         String endString = "End";
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
+        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
         g.drawString(endString,
             g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(endString) / 2,
-            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(endString) / 2);
+            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(endString) / 2);*/
+        drawStringOnCanvas(g,endString,50,Position.CENTER);
 
         // draw maximum travelled distance from strart
         String maxDistanceFromStartString = String.format("Your maximum distance was = %.1f", maxDistanceFromStart);
-        g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
+        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
         g.drawString(maxDistanceFromStartString,
             g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(maxDistanceFromStartString) / 2,
-            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(maxDistanceFromStartString) / 2 +100);
+            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(maxDistanceFromStartString) / 2 +100);*/
+        drawStringOnCanvas(g,endString,20,Position.CENTEREND);
       }
 
       g.dispose();
@@ -194,7 +196,7 @@ public class InteractiveSnapshotListener implements SnapshotListener {
     }
   }
 
-  public enum Position{TOPCENTER, LEFT,RIGHT,CENTER,CENTEREND1,CENTEREND2}
+  public enum Position{TOPCENTER, LEFT,RIGHT,CENTER,CENTEREND}
 
   private void drawStringOnCanvas(Graphics2D g, String string, int size, Position position){
     g.setFont(new Font(Font.MONOSPACED, Font.BOLD, size));
@@ -217,8 +219,10 @@ public class InteractiveSnapshotListener implements SnapshotListener {
         posX = g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2;
         posY = g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(string) / 2;
         break;
-      case CENTEREND1:
-      case CENTEREND2:
+      case CENTEREND:
+        posX = g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2;
+        posY = g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(string) / 2 +10;
+        break;
       default:
         posX = 0;
         posY = 0;
