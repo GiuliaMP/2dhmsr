@@ -57,7 +57,7 @@ public class RunManager {
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(60 + 3, false, name, robotType, device, writeToFile);
+    doSession(10 + 3, false, name, robotType, device, writeToFile);
   }
 
   // Metti un po' di discesa
