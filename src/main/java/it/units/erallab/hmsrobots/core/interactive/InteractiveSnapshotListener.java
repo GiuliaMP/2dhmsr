@@ -1,5 +1,6 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
+import it.units.erallab.hmsrobots.core.controllers.DistributedSensing;
 import it.units.erallab.hmsrobots.core.geometry.Point2;
 import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
@@ -11,6 +12,7 @@ import it.units.erallab.hmsrobots.viewers.FramesImageBuilder;
 import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
 import it.units.erallab.hmsrobots.viewers.drawers.SubtreeDrawer;
 import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -104,37 +106,17 @@ public class InteractiveSnapshotListener implements SnapshotListener {
 
         // Useful informations for the user
         // Timer
-        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
-        String timerString = "" + (3 - (int) simT);
-        g.drawString(timerString,
-            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(timerString) / 2,
-            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(timerString) / 2);*/
         String timerString = "" + (3 - (int) simT);
         drawStringOnCanvas(g,timerString,40,Position.CENTER);
         // Title
-        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-        String titleString = "Ready to start in:";
-        g.drawString(titleString,
-            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(titleString) / 2,
-            g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());*/
         String titleString = "Ready to start in:";
         drawStringOnCanvas(g,titleString,30,Position.TOPCENTER);
       } else if (realT < totalTime) {
         // Draw
         // Useful informations for the user
-        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 40));
-        String timerString = "" + (totalTime - (int) simT);
-        g.drawString(timerString,
-            g.getClipBounds().x + g.getClipBounds().width - 1 - g.getFontMetrics().stringWidth(timerString) - 30,
-            g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());*/
         String timerString = "" + (totalTime - (int) simT);
         drawStringOnCanvas(g,timerString,40,Position.RIGHT);
 
-        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 30));
-        String trainingString = trainingFlag ? "Training" : "Do your best now";
-        g.drawString(trainingString,
-            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(trainingString) / 2,
-            g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());*/
         String trainingString = trainingFlag ? "Training" : "Do your best now";
         drawStringOnCanvas(g,trainingString,30,Position.TOPCENTER);
 
@@ -144,9 +126,6 @@ public class InteractiveSnapshotListener implements SnapshotListener {
           maxDistanceFromStart = distanceFromStart;
         }
         String distanceFromStartString = String.format("Distance = %.1f", distanceFromStart);
-        /*g.drawString(distanceFromStartString,
-            g.getClipBounds().x + 1,
-            g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent() + 30);*/
         drawStringOnCanvas(g,distanceFromStartString,20,Position.LEFT);
         this.prevT = simT;
       } else if (!trainingFlag) {
@@ -154,19 +133,11 @@ public class InteractiveSnapshotListener implements SnapshotListener {
         lastDrawT = realT;
 
         String endString = "End";
-        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 50));
-        g.drawString(endString,
-            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(endString) / 2,
-            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(endString) / 2);*/
         drawStringOnCanvas(g,endString,50,Position.CENTER);
 
         // draw maximum travelled distance from strart
         String maxDistanceFromStartString = String.format("Your maximum distance was = %.1f", maxDistanceFromStart);
-        /*g.setFont(new Font(Font.MONOSPACED, Font.BOLD, 20));
-        g.drawString(maxDistanceFromStartString,
-            g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(maxDistanceFromStartString) / 2,
-            g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(maxDistanceFromStartString) / 2 +100);*/
-        drawStringOnCanvas(g,endString,20,Position.CENTEREND);
+        drawStringOnCanvas(g,maxDistanceFromStartString,20,Position.CENTEREND);
       }
 
       g.dispose();
@@ -196,41 +167,73 @@ public class InteractiveSnapshotListener implements SnapshotListener {
     }
   }
 
-  public enum Position{TOPCENTER, LEFT,RIGHT,CENTER,CENTEREND}
+  public enum Position{
+    TOPCENTER(0,0),
+    LEFT(0,0),
+    RIGHT(0,0),
+    CENTER(0,0),
+    CENTEREND(0,0);
+
+    private int posX;
+    private int posY;
+
+    Position(int posX, int posY) {
+      this.posX = posX;
+      this.posY = posY;
+    }
+
+    public int getPosX() {
+      return posX;
+    }
+
+    public int getPosY() {
+      return posY;
+    }
+
+    public void setPosX(int posX) {
+      this.posX = posX;
+    }
+
+    public void setPosY(int posY) {
+      this.posY = posY;
+    }
+
+    private void setPositions(Graphics2D g, String string) {
+      switch (this) {
+        case TOPCENTER -> {
+          setPosX(g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2);
+          setPosY(g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
+        }
+        case LEFT -> {
+          setPosX(g.getClipBounds().x + 1);
+          setPosY(g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent() + 30);
+        }
+        case RIGHT -> {
+          setPosX(g.getClipBounds().x + g.getClipBounds().width - 1 - g.getFontMetrics().stringWidth(string) - 30);
+          setPosY(g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent());
+        }
+        case CENTER -> {
+          setPosX(g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2);
+          setPosY(g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(string) / 2);
+        }
+        case CENTEREND -> {
+          setPosX(g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2);
+          setPosY(g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(string) / 2 + 100);
+        }
+        default -> {
+          setPosX(0);
+          setPosY(0);
+        }
+      }
+    }
+  }
 
   private void drawStringOnCanvas(Graphics2D g, String string, int size, Position position){
     g.setFont(new Font(Font.MONOSPACED, Font.BOLD, size));
-    int posX;
-    int posY;
-    switch (position) {
-      case TOPCENTER:
-        posX = g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2;
-        posY = g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent();
-        break;
-      case LEFT:
-        posX = g.getClipBounds().x + 1;
-        posY = g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent() + 30;
-        break;
-      case RIGHT:
-        posX = g.getClipBounds().x + g.getClipBounds().width - 1 - g.getFontMetrics().stringWidth(string) - 30;
-        posY = g.getClipBounds().y + 1 + g.getFontMetrics().getMaxAscent();
-        break;
-      case CENTER:
-        posX = g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2;
-        posY = g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(string) / 2;
-        break;
-      case CENTEREND:
-        posX = g.getClipBounds().x + g.getClipBounds().width / 2 - g.getFontMetrics().stringWidth(string) / 2;
-        posY = g.getClipBounds().y + g.getClipBounds().height / 2 - g.getFontMetrics().stringWidth(string) / 2 +10;
-        break;
-      default:
-        posX = 0;
-        posY = 0;
-        break;
-    }
+    position.setPositions(g,string);
     g.drawString(string,
-        posX,
-        posY);
+        position.getPosX(),
+        position.getPosY());
   }
 
   public SortedMap<Double, List<Boolean>> getFlagHistory() {

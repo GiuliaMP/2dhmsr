@@ -50,14 +50,14 @@ public class RunManager {
     // Training = 60s
     // Play = 30s
     if (!withoutTraining) {
-      doSession(5 + 3, true, name, robotType, device, writeToFile);
+      doSession(60 + 3, true, name, robotType, device, writeToFile);
     }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(10 + 3, false, name, robotType, device, writeToFile);
+    doSession(30 + 3, false, name, robotType, device, writeToFile);
   }
 
   // Metti un po' di discesa
@@ -70,8 +70,8 @@ public class RunManager {
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
     );
     Locomotion locomotion = new Locomotion(totalTime,
-        //Locomotion.createTerrain("hilly-0.5-10-0"),
-        Locomotion.createTerrain("downhill-5"),
+        Locomotion.createTerrain("hilly-0.5-10-0"),
+        //Locomotion.createTerrain("downhill-5"),
         //InteractiveTerrainManager.createTerrain("downhillHilly-10-0.5-10-0"),
         new Settings()
     );
