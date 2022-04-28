@@ -8,12 +8,14 @@ import it.units.erallab.hmsrobots.tasks.locomotion.Outcome;
 import it.units.erallab.hmsrobots.util.Grid;
 import it.units.erallab.hmsrobots.util.RobotUtils;
 import it.units.erallab.hmsrobots.viewers.AllRobotFollower;
-import it.units.erallab.hmsrobots.viewers.drawers.*;
+import it.units.erallab.hmsrobots.viewers.drawers.Drawer;
+import it.units.erallab.hmsrobots.viewers.drawers.PolyDrawer;
+import it.units.erallab.hmsrobots.viewers.drawers.SubtreeDrawer;
+import it.units.erallab.hmsrobots.viewers.drawers.VoxelDrawer;
 import org.dyn4j.dynamics.Settings;
 
 import java.io.File;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedMap;
 
 public class RunManager {
@@ -22,8 +24,8 @@ public class RunManager {
   private final String robotType;
   private final String device;
   private final boolean writeToFile;
-  private boolean withoutTraining;
   private final CanvasManager canvasManager;
+  private boolean withoutTraining;
 
   public RunManager(String name, String robotType, String device, String writeToFile, String withoutTraining) {
     this.name = name;
@@ -49,15 +51,17 @@ public class RunManager {
   private void run() {
     // Training = 60s
     // Play = 30s
+    String fileName = name + robotType;
+    //int totalTime, boolean trainingFlag, String fileName
     if (!withoutTraining) {
-      doSession(60 + 3, true, name, robotType, device, writeToFile);
+      doSession(60 + 3, true, fileName, robotType, device, writeToFile);
     }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(30 + 3, false, name, robotType, device, writeToFile);
+    doSession(30 + 3, false, fileName, robotType, device, writeToFile);
   }
 
   // Metti un po' di discesa
@@ -70,9 +74,7 @@ public class RunManager {
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
     );
     Locomotion locomotion = new Locomotion(totalTime,
-        Locomotion.createTerrain("hilly-0.5-10-0"),
-        //Locomotion.createTerrain("downhill-5"),
-        //InteractiveTerrainManager.createTerrain("downhillHilly-10-0.5-10-0"),
+        InteractiveTerrainManager.createTerrain("downhillHilly-0.5-10-0"),
         new Settings()
     );
 
@@ -92,6 +94,4 @@ public class RunManager {
       }
     }
   }
-
-
 }
