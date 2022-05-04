@@ -23,10 +23,10 @@ public class RunManager {
   private final String name;
   private final String robotType;
   private final String device;
-  private int division;
+  private final int division;
   private final boolean writeToFile;
   private final CanvasManager canvasManager;
-  private boolean withoutTraining;
+  private final boolean withoutTraining;
 
   public RunManager(String name, String robotType, String device, String division, String writeToFile, String withoutTraining) {
     this.name = name;
