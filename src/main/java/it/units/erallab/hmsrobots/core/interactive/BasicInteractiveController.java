@@ -11,11 +11,12 @@ public class BasicInteractiveController extends AbstractController {
 
   private final List<Boolean> isKeyPressed;
   List<Set<Grid.Key>>  poses;
-  private boolean enabledFlag;
+  int division;
 
-  public BasicInteractiveController() {
+  public BasicInteractiveController(int division) {
+    this.division = division;
     isKeyPressed = new ArrayList<>();
-    for (int i = 0; i<4; i++) {
+    for (int i = 0; i<division; i++) {
       isKeyPressed.add(false);
     }
   }

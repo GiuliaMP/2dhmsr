@@ -23,14 +23,16 @@ public class RunManager {
   private final String name;
   private final String robotType;
   private final String device;
+  private int division;
   private final boolean writeToFile;
   private final CanvasManager canvasManager;
   private boolean withoutTraining;
 
-  public RunManager(String name, String robotType, String device, String writeToFile, String withoutTraining) {
+  public RunManager(String name, String robotType, String device, String division, String writeToFile, String withoutTraining) {
     this.name = name;
     this.robotType = robotType;
     this.device = device;
+    this.division = Integer.parseInt(division);
     this.writeToFile = Boolean.parseBoolean(writeToFile);
     this.withoutTraining = Boolean.parseBoolean(withoutTraining);
     this.canvasManager = new CanvasManager(() ->
@@ -54,21 +56,21 @@ public class RunManager {
     String fileName = name + robotType;
     //int totalTime, boolean trainingFlag, String fileName
     if (!withoutTraining) {
-      doSession(60 + 3, true, fileName, robotType, device, writeToFile);
+      doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
     }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(30 + 3, false, fileName, robotType, device, writeToFile);
+    doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
   }
 
   // Metti un po' di discesa
-  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, boolean writeToFile) {
+  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device,int division, boolean writeToFile) {
     double f = 1d;
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-4x3" : "worm-8x2");
-    BasicInteractiveController basicInteractiveController = new BasicInteractiveController();
+    BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division);
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 3),
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)

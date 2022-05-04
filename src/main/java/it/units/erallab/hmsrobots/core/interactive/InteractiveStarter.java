@@ -8,10 +8,11 @@ public class InteractiveStarter {
         String name = args[0];
         String robotType = args[1];
         String device = args[2];
-        String writeToFile = args[3];
-        String withoutTraining = args[4];
+        String division = args[3];
+        String writeToFile = args[4];
+        String withoutTraining = args[5];
 
-        new RunManager(name, robotType,device, writeToFile, withoutTraining);
+        new RunManager(name, robotType,device, division, writeToFile, withoutTraining);
     }
 }
 
