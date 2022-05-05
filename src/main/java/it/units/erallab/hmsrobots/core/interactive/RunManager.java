@@ -70,6 +70,7 @@ public class RunManager {
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device,int division, boolean writeToFile) {
     double f = 1d;
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-4x3" : "worm-8x2");
+    //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division);
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 3),
@@ -81,8 +82,8 @@ public class RunManager {
     );
 
     DevicePoller devicePoller = (device.equals("Keyboard")) ?
-        new KeyboardPoller(basicInteractiveController) :
-        new JoystickPoller(basicInteractiveController);
+        new KeyboardPoller(basicInteractiveController, division) :
+        new JoystickPoller(basicInteractiveController, division);
     canvasManager.rebuildDrawer();
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
         canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);
