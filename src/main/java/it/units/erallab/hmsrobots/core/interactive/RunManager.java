@@ -68,7 +68,6 @@ public class RunManager {
 
   // Metti un po' di discesa
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device,int division, boolean writeToFile) {
-    double f = 1d;
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-4x3" : "worm-8x2");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division);
@@ -77,7 +76,8 @@ public class RunManager {
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
     );
     Locomotion locomotion = new Locomotion(totalTime,
-        InteractiveTerrainManager.createTerrain("downhillHilly-0.5-10-0"),
+        //InteractiveTerrainManager.createTerrain("downhillHilly-0.5-10-0"),
+        Locomotion.createTerrain("downhill-10"),
         new Settings()
     );
 

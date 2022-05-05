@@ -28,10 +28,10 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
   public void keyPressed(KeyEvent e) {
     if (division == 2) {
       switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP:
+        case KeyEvent.VK_W:
           controller.setKeyPressed(true, 0);
           break;
-        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_S:
           controller.setKeyPressed(true, 1);
           break;
         default:
@@ -40,16 +40,16 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
       }
     } else {
       switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP:
+        case KeyEvent.VK_W:
           controller.setKeyPressed(true, 2);
           break;
-        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_S:
           controller.setKeyPressed(true, 1);
           break;
-        case KeyEvent.VK_LEFT:
+        case KeyEvent.VK_A:
           controller.setKeyPressed(true, 0);
           break;
-        case KeyEvent.VK_RIGHT:
+        case KeyEvent.VK_D:
           controller.setKeyPressed(true, 3);
           break;
         default:
@@ -63,10 +63,10 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
   public void keyReleased(KeyEvent e) {
     if (division == 2) {
       switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP:
+        case KeyEvent.VK_W:
           controller.setKeyPressed(false, 0);
           break;
-        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_S:
           controller.setKeyPressed(false, 1);
           break;
         default:
@@ -75,16 +75,16 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
       }
     } else {
       switch (e.getKeyCode()) {
-        case KeyEvent.VK_UP:
+        case KeyEvent.VK_W:
           controller.setKeyPressed(false, 2);
           break;
-        case KeyEvent.VK_DOWN:
+        case KeyEvent.VK_S:
           controller.setKeyPressed(false, 1);
           break;
-        case KeyEvent.VK_LEFT:
+        case KeyEvent.VK_A:
           controller.setKeyPressed(false, 0);
           break;
-        case KeyEvent.VK_RIGHT:
+        case KeyEvent.VK_D:
           controller.setKeyPressed(false, 3);
           break;
         default:
