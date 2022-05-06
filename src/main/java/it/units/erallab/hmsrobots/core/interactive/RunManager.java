@@ -67,8 +67,8 @@ public class RunManager {
   }
 
   // Metti un po' di discesa
-  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device,int division, boolean writeToFile) {
-    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-4x3" : "worm-8x2");
+  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, int division, boolean writeToFile) {
+    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division);
     Robot robot = new Robot(

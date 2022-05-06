@@ -1,5 +1,7 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
+import it.units.erallab.hmsrobots.core.controllers.AbstractController;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 

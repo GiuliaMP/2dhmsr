@@ -1,6 +1,7 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
-public interface DevicePoller {
+import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 
-    void start(BasicInteractiveController basicInteractiveController, CanvasManager canvasManager);
+public interface DevicePoller {
+  void start(BasicInteractiveController basicInteractiveController, CanvasManager canvasManager);
 }
