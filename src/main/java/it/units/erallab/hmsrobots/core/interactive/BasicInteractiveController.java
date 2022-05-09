@@ -11,12 +11,13 @@ public class BasicInteractiveController extends AbstractController {
 
   private final List<Boolean> isKeyPressed;
   List<Set<Grid.Key>>  poses;
-  int division;
+  String division;
 
-  public BasicInteractiveController(int division) {
+  public BasicInteractiveController(String division) {
     this.division = division;
+    int divisionInt = division.equals("4") ? 4 : 2;
     isKeyPressed = new ArrayList<>();
-    for (int i = 0; i<division; i++) {
+    for (int i = 0; i<divisionInt; i++) {
       isKeyPressed.add(false);
     }
   }
@@ -32,10 +33,12 @@ public class BasicInteractiveController extends AbstractController {
   @Override
   public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
     Grid<Boolean> shape = getShape(voxels);
-    if (division == 2) {
+    if (division.equals("2ud")) {
       poses = new ArrayList<>(DivisionUtils.computeTwoPosesLeftRight(shape));
-    } else {
+    } else if (division.equals("4")){
       poses = new ArrayList<>(PoseUtils.computeCardinalPoses(shape));
+    } else {
+      poses = new ArrayList<>((DivisionUtils.computeTwoPosesUpDown(shape)));
     }
     Grid<Double> values = Grid.create(voxels, v -> 1d);
     for (int i = 0; i < isKeyPressed.size(); i++) {

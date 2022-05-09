@@ -10,10 +10,10 @@ public class JoystickPoller implements DevicePoller {
   private final BasicInteractiveController controller;
 
   private List<Boolean> isKeyPressed;
-  private int division;
+  private String division;
 
 
-  public JoystickPoller(BasicInteractiveController controller, int division) {
+  public JoystickPoller(BasicInteractiveController controller, String division) {
 
     this.controller = controller;
     this.division = division;
@@ -22,7 +22,8 @@ public class JoystickPoller implements DevicePoller {
   @Override
   public void start(BasicInteractiveController controller, CanvasManager canvasManager) {
     isKeyPressed = new ArrayList<>();
-    for (int i = 0; i < division; i++) {
+    int divisionInt = division.equals("4") ? 4 : 2;
+    for (int i = 0; i < divisionInt; i++) {
       isKeyPressed.add(false);
     }
 

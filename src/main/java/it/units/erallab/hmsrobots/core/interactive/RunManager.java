@@ -23,7 +23,7 @@ public class RunManager {
   private final String name;
   private final String robotType;
   private final String device;
-  private final int division;
+  private final String division;
   private final boolean writeToFile;
   private final CanvasManager canvasManager;
   private final boolean withoutTraining;
@@ -32,7 +32,7 @@ public class RunManager {
     this.name = name;
     this.robotType = robotType;
     this.device = device;
-    this.division = Integer.parseInt(division);
+    this.division = division;
     this.writeToFile = Boolean.parseBoolean(writeToFile);
     this.withoutTraining = Boolean.parseBoolean(withoutTraining);
     this.canvasManager = new CanvasManager(() ->
@@ -65,7 +65,7 @@ public class RunManager {
     //waveSession(60 + 3, false, fileName, robotType, device, division, writeToFile);
   }
 
-  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, int division, boolean writeToFile) {
+  private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
     //Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
     //Grid<Boolean> body = RobotUtils.buildShape("free-11111-11111-00111-00111-00111-00111-00111" +
@@ -99,7 +99,7 @@ public class RunManager {
     }
   }
 
-  /*private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, int division, boolean writeToFile) {
+  /*private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
     PropagationController basicInteractiveController = new PropagationController(.10d, .5d);
