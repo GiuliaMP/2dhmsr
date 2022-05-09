@@ -1,20 +1,18 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
-import it.units.erallab.hmsrobots.core.controllers.AbstractController;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-public class KeyboardPollerWave implements DevicePoller, KeyListener {
-  private final WaveInteractiveController controller;
+public class KeyboardPollerWave implements DevicePollerProva, KeyListener {
+  private final PropagationController controller;
 
 
-  public KeyboardPollerWave(WaveInteractiveController controller) {
+  public KeyboardPollerWave(PropagationController controller) {
     this.controller = controller;
   }
 
   @Override
-  public void start(BasicInteractiveController basicInteractiveController, CanvasManager canvasManager) {
+  public void start(PropagationController basicInteractiveController, CanvasManager canvasManager) {
     canvasManager.addKeyListener(this);
   }
 
@@ -28,7 +26,7 @@ public class KeyboardPollerWave implements DevicePoller, KeyListener {
   public void keyPressed(KeyEvent e) {
     switch (e.getKeyCode()) {
       case KeyEvent.VK_SPACE:
-        controller.setKeyPressed(true);
+        controller.triggerPropagation();
         break;
       default:
         System.out.println("key pressed: not the space key");
@@ -38,13 +36,6 @@ public class KeyboardPollerWave implements DevicePoller, KeyListener {
 
   @Override
   public void keyReleased(KeyEvent e) {
-    switch (e.getKeyCode()) {
-      case KeyEvent.VK_W:
-        controller.setKeyPressed(false);
-        break;
-      default:
-        System.out.println("key released: not the space key");
-        break;
-    }
+
   }
 }

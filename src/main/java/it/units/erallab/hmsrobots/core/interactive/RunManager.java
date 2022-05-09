@@ -53,16 +53,16 @@ public class RunManager {
   private void run() {
     String fileName = name + robotType;
     if (!withoutTraining) {
-      doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
-      //waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      //doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
     }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
-    //waveSession(60 + 3, false, fileName, robotType, device, division, writeToFile);
+    //doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    waveSession(60 + 3, false, fileName, robotType, device, division, writeToFile);
   }
 
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
@@ -99,10 +99,10 @@ public class RunManager {
     }
   }
 
-  /*private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
+  private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
-    PropagationController basicInteractiveController = new PropagationController(.10d, .5d);
+    PropagationController basicInteractiveController = new PropagationController(1d, .5d);
     Robot robot = new Robot(
         basicInteractiveController,
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
@@ -126,5 +126,5 @@ public class RunManager {
         //WriteToFile.toFile(file, observationsHistory, flagsHistory);
       }
     }
-  }*/
+  }
 }
