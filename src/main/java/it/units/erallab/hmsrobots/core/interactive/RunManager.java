@@ -51,12 +51,10 @@ public class RunManager {
   }
 
   private void run() {
-    // Training = 60s
-    // Play = 30s
     String fileName = name + robotType;
-    //int totalTime, boolean trainingFlag, String fileName
     if (!withoutTraining) {
       doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      //waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
     }
     try {
       Thread.sleep(1000);
@@ -64,15 +62,18 @@ public class RunManager {
       Thread.currentThread().interrupt();
     }
     doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    //waveSession(60 + 3, false, fileName, robotType, device, division, writeToFile);
   }
 
-  // Metti un po' di discesa
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, int division, boolean writeToFile) {
-    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
+    //Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
+    //Grid<Boolean> body = RobotUtils.buildShape("free-11111-11111-00111-00111-00111-00111-00111" +
+    //"-00111-11111-11111"); // Proposta: meno schiena -> mollo sì ma meno al centro
+    Grid<Boolean> body = RobotUtils.buildShape(robotType);
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division);
     Robot robot = new Robot(
-        new SmoothedController(basicInteractiveController, 3),
+        new SmoothedController(basicInteractiveController, 5),
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
     );
     Locomotion locomotion = new Locomotion(totalTime,
@@ -97,4 +98,33 @@ public class RunManager {
       }
     }
   }
+
+  /*private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, int division, boolean writeToFile) {
+    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
+    //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
+    PropagationController basicInteractiveController = new PropagationController(.10d, .5d);
+    Robot robot = new Robot(
+        basicInteractiveController,
+        RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
+    );
+    Locomotion locomotion = new Locomotion(totalTime,
+        //InteractiveTerrainManager.createTerrain("downhillHilly-0.5-10-0"),
+        Locomotion.createTerrain("downhill-10"),
+        new Settings()
+    );
+
+    DevicePollerProva devicePoller = new KeyboardPollerWave(basicInteractiveController);
+    canvasManager.rebuildDrawer();
+    InteractiveSnapshotListenerProva interactiveSnapshotListener = new InteractiveSnapshotListenerProva(1d / 60d,
+        canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);
+    Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
+    if (!trainingFlag) {
+      SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
+      SortedMap<Double, Boolean> flagsHistory = interactiveSnapshotListener.getFlagHistory();
+      if (writeToFile) {
+        File file = new File("Dati" + fileName + ".csv");
+        //WriteToFile.toFile(file, observationsHistory, flagsHistory);
+      }
+    }
+  }*/
 }
