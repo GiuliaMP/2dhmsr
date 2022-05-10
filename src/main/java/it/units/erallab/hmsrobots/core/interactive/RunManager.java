@@ -62,7 +62,7 @@ public class RunManager {
       Thread.currentThread().interrupt();
     }
     //doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
-    waveSession(60 + 3, false, fileName, robotType, device, division, writeToFile);
+    waveSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
   }
 
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
