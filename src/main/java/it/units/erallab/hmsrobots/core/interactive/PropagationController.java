@@ -51,29 +51,23 @@ public class PropagationController extends AbstractController {
 
   @Override
   public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
-    if (active && t > propagationTime + propagationStartTime) {
+    if (active){// && t > propagationTime + propagationStartTime) {
       propagationStartTime = t;
       active = false;
     }
 
-    double deltaT = t - propagationStartTime;
-    double innerDeltaT = propagationTime / voxels.getW();
-    List<Double> contractionLevels = IntStream.range(0, voxels.getW())
-        .mapToObj(i -> wave.apply(deltaT - i * innerDeltaT)).toList();
     Grid<Double> aGrid = Grid.create(voxels.getW(), voxels.getH(), (x, y) -> {
       if (t - propagationStartTime > propagationTime) {
         return 0d;
       }
       double p = (t - propagationStartTime) / propagationTime;
-      return Math.sin(-(double) x / (double) voxels.getW() * 2 * Math.PI + p * Math.PI);
+      return Math.sin((double) x / (double) voxels.getW() * Math.PI + p * Math.PI);
     });
-    //return Grid.create(voxels.getW(), voxels.getH(), (x, y) -> contractionLevels.get(x));
     return aGrid;
   }
 
   @Override
   public void reset() {
-    // TODO startTime should be -progDelay or something like that
     propagationStartTime = -10;
     active = false;
   }
