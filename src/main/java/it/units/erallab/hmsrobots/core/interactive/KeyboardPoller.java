@@ -19,7 +19,6 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
     keyPressed.put(DevicePoller.RobotAreas.LEFT, false);
     keyPressed.put(DevicePoller.RobotAreas.RIGHT, false);
     keyPressed.put(DevicePoller.RobotAreas.IMPULSE, false);
-    keyPressed.put(DevicePoller.RobotAreas.IMPULSE, false);
   }
 
 
