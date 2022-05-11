@@ -9,54 +9,73 @@ import java.util.*;
 
 public class BasicInteractiveController extends AbstractController {
 
-  private final List<Boolean> isKeyPressed;
-  List<Set<Grid.Key>>  poses;
+  private final List<Boolean> robotAreasToContract;
+  List<Set<Grid.Key>> poses;
   String division;
+  private DevicePoller devicePoller;
 
-  public BasicInteractiveController(String division) {
+  public BasicInteractiveController(String division, DevicePoller devicePoller) {
     this.division = division;
     int divisionInt = division.equals("4") ? 4 : 2;
-    isKeyPressed = new ArrayList<>();
-    for (int i = 0; i<divisionInt; i++) {
-      isKeyPressed.add(false);
+
+    //if (device.equals("Keyboard"){
+    this.devicePoller = devicePoller;
+    //}
+
+    robotAreasToContract = new ArrayList<>();
+    for (int i = 0; i < divisionInt; i++) {
+      robotAreasToContract.add(false);
     }
   }
 
   private Grid<Boolean> getShape(Grid<Voxel> voxels) {
     Grid<Boolean> shape = Grid.create(voxels, Objects::isNull);
     for (var val : voxels) {
-        shape.set(val.key().x(), val.key().y(), voxels.get(val.key().x(), val.key().y()) != null);
+      shape.set(val.key().x(), val.key().y(), voxels.get(val.key().x(), val.key().y()) != null);
     }
     return shape;
   }
 
   @Override
   public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
+    Map<DevicePoller.RobotAreas, Boolean> keyPressed = devicePoller.getKeyPressed();
     Grid<Boolean> shape = getShape(voxels);
     if (division.equals("2ud")) {
-      poses = new ArrayList<>(DivisionUtils.computeTwoPosesLeftRight(shape));
-    } else if (division.equals("4")){
+      poses = new ArrayList<>(DivisionUtils.computeTwoPosesUpDown(shape));
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.UP), 1);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.DOWN), 0);
+    } else if (division.equals("4")) {
       poses = new ArrayList<>(PoseUtils.computeCardinalPoses(shape));
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.UP), 2);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.DOWN), 1);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.LEFT), 0);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.RIGHT), 3);
     } else {
-      poses = new ArrayList<>((DivisionUtils.computeTwoPosesUpDown(shape)));
+      poses = new ArrayList<>((DivisionUtils.computeTwoPosesLeftRight(shape)));
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.LEFT), 0);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.RIGHT), 1);
     }
     Grid<Double> values = Grid.create(voxels, v -> 1d);
-    for (int i = 0; i < isKeyPressed.size(); i++) {
+    for (int i = 0; i < robotAreasToContract.size(); i++) {
       for (Grid.Key key : poses.get(i)) {
-        values.set(key.x(), key.y(), isKeyPressed.get(i)?-1d:1d);
+        values.set(key.x(), key.y(), robotAreasToContract.get(i) ? -1d : 1d);
       }
     }
     return values;
   }
+
 
   @Override
   public void reset() {
 
   }
 
-  public void setKeyPressed(boolean keyPressed, int index) {
-    this.isKeyPressed.set(index, keyPressed);
+  public void setRobotAreasToContract(boolean keyPressed, int index) {
+    this.robotAreasToContract.set(index, keyPressed);
   }
 
-  public List<Boolean> getFlags() { return isKeyPressed; }
+  public List<Boolean> getFlags() {
+    return robotAreasToContract;
+  }
 }
+

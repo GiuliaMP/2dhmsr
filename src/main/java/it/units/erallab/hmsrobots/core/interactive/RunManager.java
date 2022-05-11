@@ -53,16 +53,16 @@ public class RunManager {
   private void run() {
     String fileName = name + robotType;
     if (!withoutTraining) {
-      //doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
-      waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      //waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
     }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    //doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
-    waveSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    //waveSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
   }
 
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
@@ -71,7 +71,11 @@ public class RunManager {
     //Grid<Boolean> body = RobotUtils.buildShape("free-11111-11111-00111-00111-00111-00111-00111" +
     //"-00111-11111-11111"); // Proposta: meno schiena -> mollo sì ma meno al centro
     Grid<Boolean> body = RobotUtils.buildShape(robotType);
-    BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division);
+    DevicePoller devicePoller = (device.equals("Keyboard")) ?
+        new KeyboardPoller() :
+        new KeyboardPoller();
+    //new JoystickPoller(basicInteractiveController, division);
+    BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division, devicePoller);
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 5),
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
@@ -82,9 +86,6 @@ public class RunManager {
         new Settings()
     );
 
-    DevicePoller devicePoller = (device.equals("Keyboard")) ?
-        new KeyboardPoller(basicInteractiveController, division) :
-        new JoystickPoller(basicInteractiveController, division);
     canvasManager.rebuildDrawer();
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
         canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);

@@ -4,10 +4,13 @@ import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import net.java.games.input.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class JoystickPoller implements DevicePoller {
   private final BasicInteractiveController controller;
+  private Map<RobotAreas, Boolean> keyPressed;
 
   private List<Boolean> isKeyPressed;
   private String division;
@@ -17,6 +20,19 @@ public class JoystickPoller implements DevicePoller {
 
     this.controller = controller;
     this.division = division;
+
+    keyPressed = new HashMap<>();
+    keyPressed.put(DevicePoller.RobotAreas.UP, false);
+    keyPressed.put(DevicePoller.RobotAreas.DOWN, false);
+    keyPressed.put(DevicePoller.RobotAreas.LEFT, false);
+    keyPressed.put(DevicePoller.RobotAreas.RIGHT, false);
+    keyPressed.put(DevicePoller.RobotAreas.IMPULSE, false);
+    keyPressed.put(DevicePoller.RobotAreas.IMPULSE, false);
+  }
+
+  @Override
+  public Map<DevicePoller.RobotAreas, Boolean> getKeyPressed() {
+    return keyPressed;
   }
 
   @Override
