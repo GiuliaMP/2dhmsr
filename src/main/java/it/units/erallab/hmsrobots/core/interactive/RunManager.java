@@ -53,16 +53,22 @@ public class RunManager {
   private void run() {
     String fileName = name + robotType;
     if (!withoutTraining) {
-      doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
-      //waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      if (division.equals("Wave")) {
+        waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      } else {
+        doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+      }
     }
     try {
       Thread.sleep(1000);
     } catch (InterruptedException ex) {
       Thread.currentThread().interrupt();
     }
-    doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
-    //waveSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    if (division.equals("Wave")) {
+      waveSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    } else {
+      doSession(30 + 3, false, fileName, robotType, device, division, writeToFile);
+    }
   }
 
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
@@ -73,8 +79,7 @@ public class RunManager {
     Grid<Boolean> body = RobotUtils.buildShape(robotType);
     DevicePoller devicePoller = (device.equals("Keyboard")) ?
         new KeyboardPoller() :
-        new KeyboardPoller();
-    //new JoystickPoller(basicInteractiveController, division);
+        new JoystickPoller();
     BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division, devicePoller);
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 5),
@@ -103,7 +108,8 @@ public class RunManager {
   private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
     Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
-    PropagationController basicInteractiveController = new PropagationController(1d, .5d);
+    DevicePoller devicePoller = new KeyboardPoller();
+    PropagationController basicInteractiveController = new PropagationController(1d, .5d, devicePoller);
     Robot robot = new Robot(
         basicInteractiveController,
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
@@ -114,17 +120,16 @@ public class RunManager {
         new Settings()
     );
 
-    DevicePollerProva devicePoller = new KeyboardPollerWave(basicInteractiveController);
     canvasManager.rebuildDrawer();
     InteractiveSnapshotListenerProva interactiveSnapshotListener = new InteractiveSnapshotListenerProva(1d / 60d,
         canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
     if (!trainingFlag) {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
-      SortedMap<Double, Boolean> flagsHistory = interactiveSnapshotListener.getFlagHistory();
+      SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
       if (writeToFile) {
         File file = new File("Dati" + fileName + ".csv");
-        //WriteToFile.toFile(file, observationsHistory, flagsHistory);
+        WriteToFile.toFile(file, observationsHistory, flagsHistory);
       }
     }
   }

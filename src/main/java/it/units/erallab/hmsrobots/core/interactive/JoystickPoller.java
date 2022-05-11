@@ -9,24 +9,19 @@ import java.util.List;
 import java.util.Map;
 
 public class JoystickPoller implements DevicePoller {
-  private final BasicInteractiveController controller;
+
   private Map<RobotAreas, Boolean> keyPressed;
-
+  String division = "4";
   private List<Boolean> isKeyPressed;
-  private String division;
 
 
-  public JoystickPoller(BasicInteractiveController controller, String division) {
-
-    this.controller = controller;
-    this.division = division;
+  public JoystickPoller() {
 
     keyPressed = new HashMap<>();
     keyPressed.put(DevicePoller.RobotAreas.UP, false);
     keyPressed.put(DevicePoller.RobotAreas.DOWN, false);
     keyPressed.put(DevicePoller.RobotAreas.LEFT, false);
     keyPressed.put(DevicePoller.RobotAreas.RIGHT, false);
-    keyPressed.put(DevicePoller.RobotAreas.IMPULSE, false);
     keyPressed.put(DevicePoller.RobotAreas.IMPULSE, false);
   }
 

@@ -18,9 +18,7 @@ public class BasicInteractiveController extends AbstractController {
     this.division = division;
     int divisionInt = division.equals("4") ? 4 : 2;
 
-    //if (device.equals("Keyboard"){
     this.devicePoller = devicePoller;
-    //}
 
     robotAreasToContract = new ArrayList<>();
     for (int i = 0; i < divisionInt; i++) {

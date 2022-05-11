@@ -21,7 +21,9 @@ import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.util.Grid;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
@@ -35,7 +37,10 @@ public class PropagationController extends AbstractController {
   private double propagationStartTime;
   private boolean active;
 
-  public PropagationController(double propagationTime, double propagationLag) {
+  private DevicePoller devicePoller;
+
+  public PropagationController(double propagationTime, double propagationLag, DevicePoller devicePoller) {
+    this.devicePoller = devicePoller;
     this.propagationTime = propagationTime;
     this.propagationLag = propagationLag;
     // might move to a private utility method
@@ -51,6 +56,9 @@ public class PropagationController extends AbstractController {
 
   @Override
   public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
+    Map<DevicePoller.RobotAreas, Boolean> keyPressed = devicePoller.getKeyPressed();
+    active = keyPressed.get(DevicePoller.RobotAreas.IMPULSE);
+
     if (active){// && t > propagationTime + propagationStartTime) {
       propagationStartTime = t;
       active = false;
