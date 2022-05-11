@@ -16,7 +16,7 @@ public class KeyboardPoller implements DevicePoller, KeyListener {
   }
 
   @Override
-  public void start(BasicInteractiveController controller, CanvasManager canvasManager) {
+  public void start(AbstractController controller, CanvasManager canvasManager) {
     canvasManager.addKeyListener(this);
   }
 

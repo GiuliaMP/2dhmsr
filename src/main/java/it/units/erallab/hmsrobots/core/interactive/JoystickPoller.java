@@ -1,6 +1,6 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
-import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
+import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import net.java.games.input.*;
 
 import java.util.ArrayList;
@@ -20,7 +20,7 @@ public class JoystickPoller implements DevicePoller {
   }
 
   @Override
-  public void start(BasicInteractiveController controller, CanvasManager canvasManager) {
+  public void start(AbstractController controller, CanvasManager canvasManager) {
     isKeyPressed = new ArrayList<>();
     int divisionInt = division.equals("4") ? 4 : 2;
     for (int i = 0; i < divisionInt; i++) {
@@ -71,19 +71,19 @@ public class JoystickPoller implements DevicePoller {
                     break;*/
                   case "1": //X
                     isKeyPressed.set(1, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 3);
+                    //controller.setKeyPressed(value == 1.0, 3);
                     break;
                   case "2":// Cerchio
                     isKeyPressed.set(3, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 1);
+                    //controller.setKeyPressed(value == 1.0, 1);
                     break;
                   case "3": //Triangolo
                     isKeyPressed.set(2, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 0);
+                    //controller.setKeyPressed(value == 1.0, 0);
                     break;
                   case "0": // Quadrato
                     isKeyPressed.set(0, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 2);
+                    //controller.setKeyPressed(value == 1.0, 2);
                     break;
                   default:
                     break;
@@ -121,37 +121,36 @@ public class JoystickPoller implements DevicePoller {
                     }
                     break;
                 }
-              }*/
-              else { // Levetta destra
+              }*/ else { // Levetta destra
                 // input from analog-sticks and back triggers
                 System.out.println(component.getIdentifier().getName());
                 System.out.println(value);
                 switch (component.getIdentifier().getName()) {
                   case "unknown":
                     if (value > 0.8) {
-                      controller.setKeyPressed(true, 3);
+                      //controller.setKeyPressed(true, 3);
                     } else if (value < -0.8) {
-                      controller.setKeyPressed(true, 0);
+                      //controller.setKeyPressed(true, 0);
                     } else {
                       if (!isKeyPressed.get(3)) {
-                        controller.setKeyPressed(false, 3);
+                        //controller.setKeyPressed(false, 3);
                       }
                       if (!isKeyPressed.get(0)) {
-                        controller.setKeyPressed(false, 0);
+                        //controller.setKeyPressed(false, 0);
                       }
                     }
                     break;
                   case "rz":
                     if (value > 0.8) {
-                      controller.setKeyPressed(true, 1);
+                      //controller.setKeyPressed(true, 1);
                     } else if (value < -0.8) {
-                      controller.setKeyPressed(true, 2);
+                      //controller.setKeyPressed(true, 2);
                     } else {
                       if (!isKeyPressed.get(1)) {
-                        controller.setKeyPressed(false, 1);
+                        //controller.setKeyPressed(false, 1);
                       }
                       if (!isKeyPressed.get(2)) {
-                        controller.setKeyPressed(false, 2);
+                        //controller.setKeyPressed(false, 2);
                       }
                     }
                     break;
