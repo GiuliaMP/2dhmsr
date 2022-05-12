@@ -43,11 +43,22 @@ public class WriteToFile {
     }
 
     public static void toFile(File file, SortedMap<Double, Outcome.Observation> observationsHistory,
-                              SortedMap<Double, List<Boolean>> flagsHistory) {
+                              SortedMap<Double, List<Boolean>> flagsHistory, String division) {
         List<String> lines = new ArrayList<>();
         for (double flagTime : flagsHistory.keySet()) {
             Point2 center = BehaviorUtils.center(observationsHistory.get(flagTime).voxelPolies().values().stream().filter(Objects::nonNull).toList());
-            String line = String.format("%.3f;%s,%s;%s;%s%.2f;%.2f;%.2f",
+            String line;
+            if (division.equals("2ud")) {
+                line = String.format("%.3f;%s;%s;%.2f;%.2f;%.2f",
+                    flagTime,
+                    flagsHistory.get(flagTime).get(1),
+                    flagsHistory.get(flagTime).get(0),
+                    center.x(),
+                    center.y(),
+                    observationsHistory.get(flagTime).terrainHeight()
+                );
+            } else if (division.equals("4")) {
+                line = String.format("%.3f;%s,%s;%s;%s%.2f;%.2f;%.2f",
                     flagTime,
                     flagsHistory.get(flagTime).get(2),
                     flagsHistory.get(flagTime).get(1),
@@ -56,13 +67,36 @@ public class WriteToFile {
                     center.x(),
                     center.y(),
                     observationsHistory.get(flagTime).terrainHeight()
-            );
+                );
+            } else if (division.equals("2lr")) {
+                line = String.format("%.3f;%s;%s;%.2f;%.2f;%.2f",
+                    flagTime,
+                    flagsHistory.get(flagTime).get(0),
+                    flagsHistory.get(flagTime).get(1),
+                    center.x(),
+                    center.y(),
+                    observationsHistory.get(flagTime).terrainHeight()
+                );
+            } else {
+                line = String.format("%.3f;%s;%.2f;%.2f;%.2f",
+                    flagTime,
+                    flagsHistory.get(flagTime).get(0),
+                    center.x(),
+                    center.y(),
+                    observationsHistory.get(flagTime).terrainHeight()
+                );
+            }
             lines.add(line);
         }
         file = check(file);
         try {
             FileWriter fileWriter = new FileWriter(file);
-            fileWriter.write("time;up;down;left;right;centreX;centreY;heightY" + System.lineSeparator());
+            switch (division) {
+                case "2ud" -> fileWriter.write("time;up;down;centreX;centreY;heightY" + System.lineSeparator());
+                case "4" -> fileWriter.write("time;up;down;left;right;centreX;centreY;heightY" + System.lineSeparator());
+                case "2lr" -> fileWriter.write("time;left;right;centreX;centreY;heightY" + System.lineSeparator());
+                default -> fileWriter.write("time;impulse;centreX;centreY;heightY" + System.lineSeparator());
+            }
             for (String line : lines) {
                 fileWriter.write(line + System.lineSeparator());
             }

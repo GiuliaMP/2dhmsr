@@ -51,7 +51,7 @@ public class RunManager {
   }
 
   private void run() {
-    String fileName = name + robotType;
+    String fileName = name + robotType + division;
     if (!withoutTraining) {
       if (division.equals("Wave")) {
         waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
@@ -93,14 +93,14 @@ public class RunManager {
 
     canvasManager.rebuildDrawer();
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
-        canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);
+        canvasManager, devicePoller, basicInteractiveController, division, totalTime, trainingFlag);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
     if (!trainingFlag) {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
       SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
       if (writeToFile) {
         File file = new File("Dati" + fileName + ".csv");
-        WriteToFile.toFile(file, observationsHistory, flagsHistory);
+        WriteToFile.toFile(file, observationsHistory, flagsHistory, division);
       }
     }
   }
@@ -121,15 +121,15 @@ public class RunManager {
     );
 
     canvasManager.rebuildDrawer();
-    InteractiveSnapshotListenerProva interactiveSnapshotListener = new InteractiveSnapshotListenerProva(1d / 60d,
-        canvasManager, devicePoller, basicInteractiveController, totalTime, trainingFlag);
+    InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
+        canvasManager, devicePoller, basicInteractiveController, division, totalTime, trainingFlag);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
     if (!trainingFlag) {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
       SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
       if (writeToFile) {
         File file = new File("Dati" + fileName + ".csv");
-        WriteToFile.toFile(file, observationsHistory, flagsHistory);
+        WriteToFile.toFile(file, observationsHistory, flagsHistory, division);
       }
     }
   }

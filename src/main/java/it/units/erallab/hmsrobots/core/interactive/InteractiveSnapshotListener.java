@@ -1,5 +1,6 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
+import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import it.units.erallab.hmsrobots.core.geometry.Point2;
 import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
@@ -14,10 +15,8 @@ import org.apache.commons.lang3.time.StopWatch;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
@@ -25,7 +24,7 @@ public class InteractiveSnapshotListener implements SnapshotListener {
   private final static int FRAME_RATE = 30;
   private static final Logger L = Logger.getLogger(FramesImageBuilder.class.getName());
   private final double dT;
-  private final BasicInteractiveController controller;
+  private final AbstractController controller;
   private final CanvasManager canvasManager;
   private final DevicePoller devicePoller;
   private final SortedMap<Double, List<Boolean>> flagHistory;
@@ -38,22 +37,33 @@ public class InteractiveSnapshotListener implements SnapshotListener {
   private double prevT;
   private Double firstX;
   private double maxDistanceFromStart;
+  private final String division;
+  private final List<Boolean> robotAreasToContract;
 
 
   public InteractiveSnapshotListener(double dT, CanvasManager canvasManager,
                                      DevicePoller devicePoller,
-                                     BasicInteractiveController controller,
+                                     AbstractController controller,
+                                     String division,
                                      int totalTime,
                                      boolean trainingFlag) {
     this.dT = dT;
     this.canvasManager = canvasManager;
     this.controller = controller;
     this.devicePoller = devicePoller;
+    this.division = division;
 
     this.totalTime = totalTime;
     this.trainingFlag = trainingFlag;
 
     this.flagHistory = new TreeMap<>();
+
+    int divisionInt = division.equals("4") ? 4 : 2;
+
+    robotAreasToContract = new ArrayList<>();
+    for (int i = 0; i < divisionInt; i++) {
+      robotAreasToContract.add(false);
+    }
 
     prevT = 0;
     firstX = null;
@@ -145,7 +155,8 @@ public class InteractiveSnapshotListener implements SnapshotListener {
       }
       Toolkit.getDefaultToolkit().sync();
 
-      List<Boolean> flags = new ArrayList<>(controller.getFlags());
+      List<Boolean> flags = new ArrayList<>();
+      flags.addAll(takeFlagsFromPoller(division));
       flagHistory.putIfAbsent(simT, flags);
     }
 
@@ -163,6 +174,29 @@ public class InteractiveSnapshotListener implements SnapshotListener {
         }
       }
     }
+  }
+
+  private List<Boolean> takeFlagsFromPoller(String division) {
+    Map<DevicePoller.RobotAreas, Boolean> keyPressed = new HashMap<>(devicePoller.getKeyPressed());
+    if (division.equals("2ud")) {
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.UP), 1);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.DOWN), 0);
+    } else if (division.equals("4")) {
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.UP), 2);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.DOWN), 1);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.LEFT), 0);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.RIGHT), 3);
+    } else if (division.equals("2lr")) {
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.LEFT), 0);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.RIGHT), 1);
+    } else {
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.IMPULSE), 0);
+    }
+    return robotAreasToContract;
+  }
+
+  private void setRobotAreasToContract(boolean keyPressed, int index) {
+    this.robotAreasToContract.set(index, keyPressed);
   }
 
   public enum Position{

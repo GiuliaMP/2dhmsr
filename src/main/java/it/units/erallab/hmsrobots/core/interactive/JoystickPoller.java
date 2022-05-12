@@ -11,6 +11,7 @@ import java.util.Map;
 public class JoystickPoller implements DevicePoller {
 
   private Map<RobotAreas, Boolean> keyPressed;
+
   String division = "4";
   private List<Boolean> isKeyPressed;
 

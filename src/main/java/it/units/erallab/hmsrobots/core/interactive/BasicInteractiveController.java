@@ -16,9 +16,8 @@ public class BasicInteractiveController extends AbstractController {
 
   public BasicInteractiveController(String division, DevicePoller devicePoller) {
     this.division = division;
-    int divisionInt = division.equals("4") ? 4 : 2;
-
     this.devicePoller = devicePoller;
+    int divisionInt = division.equals("4") ? 4 : 2;
 
     robotAreasToContract = new ArrayList<>();
     for (int i = 0; i < divisionInt; i++) {
@@ -68,7 +67,7 @@ public class BasicInteractiveController extends AbstractController {
 
   }
 
-  public void setRobotAreasToContract(boolean keyPressed, int index) {
+  private void setRobotAreasToContract(boolean keyPressed, int index) {
     this.robotAreasToContract.set(index, keyPressed);
   }
 
