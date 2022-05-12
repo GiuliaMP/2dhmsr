@@ -12,9 +12,6 @@ public class JoystickPoller implements DevicePoller {
 
   private Map<RobotAreas, Boolean> keyPressed;
 
-  String division = "4";
-  private List<Boolean> isKeyPressed;
-
 
   public JoystickPoller() {
 
@@ -33,11 +30,6 @@ public class JoystickPoller implements DevicePoller {
 
   @Override
   public void start(AbstractController controller, CanvasManager canvasManager) {
-    isKeyPressed = new ArrayList<>();
-    int divisionInt = division.equals("4") ? 4 : 2;
-    for (int i = 0; i < divisionInt; i++) {
-      isKeyPressed.add(false);
-    }
 
     new Thread(new Runnable() {
       public void run() {
@@ -65,7 +57,9 @@ public class JoystickPoller implements DevicePoller {
               double value = event.getValue();
               if (!component.isAnalog()) { // Pulsantini
                 switch (component.getIdentifier().toString()) {
-                  /*case "1": //X
+                  /*
+                  PS4
+                  case "1": //X
                     isKeyPressed.set(1, value == 1.0);
                     controller.setKeyPressed(value == 1.0, 1);
                     break;
@@ -81,26 +75,22 @@ public class JoystickPoller implements DevicePoller {
                     isKeyPressed.set(0, value == 1.0);
                     controller.setKeyPressed(value == 1.0, 0);
                     break;*/
-                  case "1": //X
-                    isKeyPressed.set(1, value == 1.0);
-                    //controller.setKeyPressed(value == 1.0, 3);
+                  case "1": // Cerchio
+                    keyPressed.replace(RobotAreas.RIGHT, value == 1.0);
                     break;
-                  case "2":// Cerchio
-                    isKeyPressed.set(3, value == 1.0);
-                    //controller.setKeyPressed(value == 1.0, 1);
+                  case "2":// X
+                    keyPressed.replace(RobotAreas.DOWN, value == 1.0);
                     break;
-                  case "3": //Triangolo
-                    isKeyPressed.set(2, value == 1.0);
-                    //controller.setKeyPressed(value == 1.0, 0);
+                  case "3": // Quadrato
+                    keyPressed.replace(RobotAreas.LEFT, value == 1.0);
                     break;
-                  case "0": // Quadrato
-                    isKeyPressed.set(0, value == 1.0);
-                    //controller.setKeyPressed(value == 1.0, 2);
+                  case "0": // Triangolo
+                    keyPressed.replace(RobotAreas.UP, value == 1.0);
                     break;
                   default:
                     break;
                 }
-              } /*else { // Levetta destra
+              } /*else { // Levetta destra PS4
                 System.out.println(component.toString());
                 // input from analog-sticks and back triggers
                 switch (component.getIdentifier().getName()) {
@@ -133,7 +123,7 @@ public class JoystickPoller implements DevicePoller {
                     }
                     break;
                 }
-              }*/ else { // Levetta destra
+              } else { // Levetta destra
                 // input from analog-sticks and back triggers
                 System.out.println(component.getIdentifier().getName());
                 System.out.println(value);
@@ -167,7 +157,7 @@ public class JoystickPoller implements DevicePoller {
                     }
                     break;
                 }
-              }
+              }*/
             }
           }
 
