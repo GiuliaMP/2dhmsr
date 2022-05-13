@@ -71,11 +71,10 @@ public class RunManager {
     }
   }
 
+  // USED SHAPE: "biped-12x5" or "worm-16x4"
+
   private void doSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
-    //Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
-    //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
-    //Grid<Boolean> body = RobotUtils.buildShape("free-11111-11111-00111-00111-00111-00111-00111" +
-    //"-00111-11111-11111"); // Proposta: meno schiena -> mollo sì ma meno al centro
+    // Proposta: meno schiena -> mollo sì ma meno al centro
     Grid<Boolean> body = RobotUtils.buildShape(robotType);
     DevicePoller devicePoller = (device.equals("Keyboard")) ?
         new KeyboardPoller() :
@@ -106,7 +105,7 @@ public class RunManager {
   }
 
   private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
-    Grid<Boolean> body = RobotUtils.buildShape(robotType.equals("Multiped") ? "biped-12x5" : "worm-16x4");
+    Grid<Boolean> body = RobotUtils.buildShape("worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
     DevicePoller devicePoller = new KeyboardPoller();
     PropagationController basicInteractiveController = new PropagationController(1d, .5d, devicePoller);
