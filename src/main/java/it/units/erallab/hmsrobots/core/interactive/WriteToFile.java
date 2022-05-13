@@ -78,9 +78,10 @@ public class WriteToFile {
                     observationsHistory.get(flagTime).terrainHeight()
                 );
             } else {
-                line = String.format("%.3f;%s;%.2f;%.2f;%.2f",
+                line = String.format("%.3f;%s;%s;%.2f;%.2f;%.2f",
                     flagTime,
                     flagsHistory.get(flagTime).get(0),
+                    flagsHistory.get(flagTime).get(1),
                     center.x(),
                     center.y(),
                     observationsHistory.get(flagTime).terrainHeight()

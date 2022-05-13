@@ -190,7 +190,8 @@ public class InteractiveSnapshotListener implements SnapshotListener {
       setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.LEFT), 0);
       setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.RIGHT), 1);
     } else {
-      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.IMPULSE), 0);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.LEFT), 0);
+      setRobotAreasToContract(keyPressed.get(DevicePoller.RobotAreas.RIGHT), 1);
     }
     return robotAreasToContract;
   }

@@ -21,30 +21,24 @@ import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
 import it.units.erallab.hmsrobots.util.Grid;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.IntStream;
 
 public class PropagationController extends AbstractController {
 
   private final double propagationTime;
-  // TODO might remove the field (if we don't need to get it)
-  private final double propagationLag;
-  private final Function<Double, Double> wave;
 
-  private double propagationStartTime;
-  private boolean active;
+  private double propagationStartTimeRight;
+  private double propagationStartTimeLeft;
+  private boolean activeRight;
+  private boolean activeLeft;
 
   private DevicePoller devicePoller;
 
   public PropagationController(double propagationTime, double propagationLag, DevicePoller devicePoller) {
     this.devicePoller = devicePoller;
     this.propagationTime = propagationTime;
-    this.propagationLag = propagationLag;
-    // might move to a private utility method
-    wave = x -> {
+    Function<Double, Double> wave = x -> {
       if (x < 0 || x > 4 * (propagationTime - propagationLag)) {
         return 0d;
       } else {
@@ -57,38 +51,36 @@ public class PropagationController extends AbstractController {
   @Override
   public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
     Map<DevicePoller.RobotAreas, Boolean> keyPressed = devicePoller.getKeyPressed();
-    active = keyPressed.get(DevicePoller.RobotAreas.IMPULSE);
+    activeRight = keyPressed.get(DevicePoller.RobotAreas.RIGHT);
+    activeLeft = keyPressed.get(DevicePoller.RobotAreas.LEFT);
 
-    if (active){// && t > propagationTime + propagationStartTime) {
-      propagationStartTime = t;
-      active = false;
+    if (activeRight) {
+      propagationStartTimeRight = t;
+      activeRight = false;
+    }
+
+    if (activeLeft) {
+      propagationStartTimeLeft = t;
+      activeLeft = false;
     }
 
     Grid<Double> aGrid = Grid.create(voxels.getW(), voxels.getH(), (x, y) -> {
-      if (t - propagationStartTime > propagationTime) {
-        return 0d;
-      }
-      double p = (t - propagationStartTime) / propagationTime;
-      return Math.sin((double) x / (double) voxels.getW() * Math.PI + p * Math.PI);
+      double pRight = (t - propagationStartTimeRight) / propagationTime;
+      double pLeft = (t - propagationStartTimeLeft) / propagationTime;
+      double waveRight = Math.sin(-voxels.getW()+(double) x / (double) voxels.getW() * Math.PI + pRight * Math.PI);
+      double waveLeft = Math.sin(-(double) x / (double) voxels.getW() * Math.PI + pLeft * Math.PI);
+      return waveRight * ((t - propagationStartTimeRight > propagationTime) ? 0 : 1)
+          + waveLeft * ((t - propagationStartTimeLeft > propagationTime) ? 0 : 1);
     });
     return aGrid;
   }
 
   @Override
   public void reset() {
-    propagationStartTime = -10;
-    active = false;
-  }
-
-  public void triggerPropagation() {
-    // TODO handle cases where you trigger it but there's an ongoing propagation
-    // TODO List of times? Prevent it? Handle here or in computeSignals
-    active = true;
-    System.out.println("triggered");
-  }
-
-  public boolean getActive() {
-    return active;
+    propagationStartTimeRight = -10;
+    propagationStartTimeLeft = -10;
+    activeRight = false;
+    activeLeft = false;
   }
 
 }
