@@ -67,7 +67,8 @@ public class PropagationController extends AbstractController {
     Grid<Double> aGrid = Grid.create(voxels.getW(), voxels.getH(), (x, y) -> {
       double pRight = (t - propagationStartTimeRight) / propagationTime;
       double pLeft = (t - propagationStartTimeLeft) / propagationTime;
-      double waveRight = Math.sin(-voxels.getW()+(double) x / (double) voxels.getW() * Math.PI + pRight * Math.PI);
+      double lag = (-voxels.getW()+.8);
+      double waveRight = Math.sin(lag+(double) x / (double) voxels.getW() * Math.PI + pRight * Math.PI);
       double waveLeft = Math.sin(-(double) x / (double) voxels.getW() * Math.PI + pLeft * Math.PI);
       return waveRight * ((t - propagationStartTimeRight > propagationTime) ? 0 : 1)
           + waveLeft * ((t - propagationStartTimeLeft > propagationTime) ? 0 : 1);
