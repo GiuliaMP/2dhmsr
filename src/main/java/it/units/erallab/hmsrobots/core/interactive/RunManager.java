@@ -27,14 +27,16 @@ public class RunManager {
   private final boolean writeToFile;
   private final CanvasManager canvasManager;
   private final boolean withoutTraining;
+  private final int iteration;
 
-  public RunManager(String name, String robotType, String device, String division, String writeToFile, String withoutTraining) {
+  public RunManager(String name, String robotType, String device, String division, String writeToFile, String withoutTraining, String iteration) {
     this.name = name;
     this.robotType = robotType;
     this.device = device;
     this.division = division;
     this.writeToFile = Boolean.parseBoolean(writeToFile);
     this.withoutTraining = Boolean.parseBoolean(withoutTraining);
+    this.iteration = Integer.parseInt(iteration);
     this.canvasManager = new CanvasManager(() ->
         Drawer.of(
             Drawer.clear(),
@@ -56,7 +58,11 @@ public class RunManager {
       if (division.equals("Wave")) {
         waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
       } else {
-        doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+        if (iteration == 2) {
+          doSession(30 + 3, true, fileName, robotType, device, division, writeToFile);
+        } else {
+          doSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+        }
       }
     }
     try {

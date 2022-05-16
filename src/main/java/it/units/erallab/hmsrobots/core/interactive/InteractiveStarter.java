@@ -9,8 +9,9 @@ public class InteractiveStarter {
     String division = args[3]; // 2 or 4
     String writeToFile = args[4]; // Take the data or not
     String withoutTraining = args[5]; // No training in case someone wants to do the session again
+    String iteration = args[6];
 
-    new RunManager(name, robotType, device, division, writeToFile, withoutTraining);
+    new RunManager(name, robotType, device, division, writeToFile, withoutTraining, iteration);
   }
 }
 
