@@ -113,7 +113,9 @@ public class RunManager {
   private void waveSession(int totalTime, boolean trainingFlag, String fileName, String robotType, String device, String division, boolean writeToFile) {
     Grid<Boolean> body = RobotUtils.buildShape("worm-16x4");
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
-    DevicePoller devicePoller = new KeyboardPoller();
+    DevicePoller devicePoller = (device.equals("Keyboard")) ?
+        new KeyboardPoller() :
+        new JoystickPoller();
     PropagationController basicInteractiveController = new PropagationController(1d, .5d, devicePoller);
     Robot robot = new Robot(
         basicInteractiveController,
