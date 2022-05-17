@@ -53,10 +53,10 @@ public class RunManager {
   }
 
   private void run() {
-    String fileName = name + robotType + division;
+    String fileName = name + "_" + robotType+ "_" + division + "_" + device;
     if (!withoutTraining) {
       if (division.equals("Wave")) {
-        waveSession(60 + 3, true, fileName, robotType, device, division, writeToFile);
+        waveSession(30 + 3, true, fileName, robotType, device, division, writeToFile);
       } else {
         if (iteration == 2) {
           doSession(30 + 3, true, fileName, robotType, device, division, writeToFile);
@@ -104,7 +104,7 @@ public class RunManager {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
       SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
       if (writeToFile) {
-        File file = new File("Dati" + fileName + ".csv");
+        File file = new File(fileName + ".csv");
         WriteToFile.toFile(file, observationsHistory, flagsHistory, division);
       }
     }
@@ -135,7 +135,7 @@ public class RunManager {
       SortedMap<Double, Outcome.Observation> observationsHistory = out.getObservations();
       SortedMap<Double, List<Boolean>> flagsHistory = interactiveSnapshotListener.getFlagHistory();
       if (writeToFile) {
-        File file = new File("Dati" + fileName + ".csv");
+        File file = new File(fileName + ".csv");
         WriteToFile.toFile(file, observationsHistory, flagsHistory, division);
       }
     }
