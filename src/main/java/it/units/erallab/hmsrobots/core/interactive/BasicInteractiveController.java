@@ -71,8 +71,5 @@ public class BasicInteractiveController extends AbstractController {
     this.robotAreasToContract.set(index, keyPressed);
   }
 
-  public List<Boolean> getFlags() {
-    return robotAreasToContract;
-  }
 }
 
