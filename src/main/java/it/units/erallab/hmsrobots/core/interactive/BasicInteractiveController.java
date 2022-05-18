@@ -35,7 +35,7 @@ public class BasicInteractiveController extends AbstractController {
 
   @Override
   public Grid<Double> computeControlSignals(double t, Grid<Voxel> voxels) {
-    Map<DevicePoller.RobotAreas, Boolean> keyPressed = devicePoller.getKeyPressed();
+    Map<DevicePoller.RobotAreas, Boolean> keyPressed = new HashMap<>(devicePoller.getKeyPressed());
     Grid<Boolean> shape = getShape(voxels);
     if (division.equals("2ud")) {
       poses = new ArrayList<>(DivisionUtils.computeTwoPosesUpDown(shape));

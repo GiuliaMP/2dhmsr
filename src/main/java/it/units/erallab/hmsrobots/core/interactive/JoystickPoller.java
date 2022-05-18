@@ -3,9 +3,7 @@ package it.units.erallab.hmsrobots.core.interactive;
 import it.units.erallab.hmsrobots.core.controllers.AbstractController;
 import net.java.games.input.*;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class JoystickPoller implements DevicePoller {
@@ -14,6 +12,7 @@ public class JoystickPoller implements DevicePoller {
 
 
   public JoystickPoller() {
+    //System.setProperty("net.java.games.input.useDefaultPlugin", "false");
 
     keyPressed = new HashMap<>();
     keyPressed.put(DevicePoller.RobotAreas.UP, false);
@@ -57,35 +56,17 @@ public class JoystickPoller implements DevicePoller {
               double value = event.getValue();
               if (!component.isAnalog()) { // Pulsantini
                 switch (component.getIdentifier().toString()) {
-                  /*
-                  PS4
-                  case "1": //X
-                    isKeyPressed.set(1, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 1);
-                    break;
-                  case "2":// Cerchio
-                    isKeyPressed.set(3, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 3);
-                    break;
-                  case "3": //Triangolo
-                    isKeyPressed.set(2, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 2);
-                    break;
-                  case "0": // Quadrato
-                    isKeyPressed.set(0, value == 1.0);
-                    controller.setKeyPressed(value == 1.0, 0);
-                    break;*/
                   case "1": // Cerchio
-                    keyPressed.replace(RobotAreas.RIGHT, value == 1.0);
+                    keyPressed.replace(RobotAreas.RIGHT, (value == 1.0));
                     break;
                   case "2":// X
-                    keyPressed.replace(RobotAreas.DOWN, value == 1.0);
+                    keyPressed.replace(RobotAreas.DOWN, (value == 1.0));
                     break;
                   case "3": // Quadrato
-                    keyPressed.replace(RobotAreas.LEFT, value == 1.0);
+                    keyPressed.replace(RobotAreas.LEFT, (value == 1.0));
                     break;
                   case "0": // Triangolo
-                    keyPressed.replace(RobotAreas.UP, value == 1.0);
+                    keyPressed.replace(RobotAreas.UP, (value == 1.0));
                     break;
                   default:
                     break;
