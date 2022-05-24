@@ -58,7 +58,7 @@ public class WriteToFile {
                     observationsHistory.get(flagTime).terrainHeight()
                 );
             } else if (division.equals("4")) {
-                line = String.format("%.3f;%s,%s;%s;%s%.2f;%.2f;%.2f",
+                line = String.format("%.3f;%s;%s;%s;%s;%.2f;%.2f;%.2f",
                     flagTime,
                     flagsHistory.get(flagTime).get(2),
                     flagsHistory.get(flagTime).get(1),
