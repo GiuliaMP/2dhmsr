@@ -56,21 +56,26 @@ public class JoystickPoller implements DevicePoller {
               double value = event.getValue();
               if (!component.isAnalog()) { // Pulsantini
                 switch (component.getIdentifier().toString()) {
+                  //PS2 commented
                   //case "1": // Cerchio
                   case "5": //R2
-                    keyPressed.replace(RobotAreas.RIGHT, (value == 1.0));
+                    //keyPressed.replace(RobotAreas.RIGHT, (value == 1.0));
+                    keyPressed.replace(RobotAreas.DOWN, (value == 1.0));
                     break;
                   //case "2":// X
                   case "7": //R1
-                    keyPressed.replace(RobotAreas.DOWN, (value == 1.0));
+                    //keyPressed.replace(RobotAreas.DOWN, (value == 1.0));
+                    keyPressed.replace(RobotAreas.RIGHT, (value == 1.0));
                     break;
                   //case "3": // Quadrato
                   case "4": //L2
-                    keyPressed.replace(RobotAreas.LEFT, (value == 1.0));
+                    //keyPressed.replace(RobotAreas.LEFT, (value == 1.0));
+                    keyPressed.replace(RobotAreas.UP, (value == 1.0));
                     break;
                   //case "0": // Triangolo
                   case "6": //L1
-                    keyPressed.replace(RobotAreas.UP, (value == 1.0));
+                    keyPressed.replace(RobotAreas.LEFT, (value == 1.0));
+                    //keyPressed.replace(RobotAreas.UP, (value == 1.0));
                     break;
                   default:
                     break;

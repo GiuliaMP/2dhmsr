@@ -7,14 +7,14 @@ import it.units.erallab.hmsrobots.util.Grid;
 
 import java.util.*;
 
-public class BasicInteractiveController extends AbstractController {
+public class ButtonsController extends AbstractController {
 
   private final List<Boolean> robotAreasToContract;
   List<Set<Grid.Key>> poses;
   String division;
   private DevicePoller devicePoller;
 
-  public BasicInteractiveController(String division, DevicePoller devicePoller) {
+  public ButtonsController(String division, DevicePoller devicePoller) {
     this.division = division;
     this.devicePoller = devicePoller;
     int divisionInt = division.equals("4") ? 4 : 2;

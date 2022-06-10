@@ -82,7 +82,7 @@ public class RunManager {
   }
 
   private void doSession(int totalTime, boolean trainingFlag, String fileName, Grid<Boolean> body, DevicePoller devicePoller, String division, boolean writeToFile) {
-    BasicInteractiveController basicInteractiveController = new BasicInteractiveController(division, devicePoller);
+    ButtonsController basicInteractiveController = new ButtonsController(division, devicePoller);
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 5),
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
