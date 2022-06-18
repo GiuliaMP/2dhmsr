@@ -1,6 +1,8 @@
 package it.units.erallab.hmsrobots.core.interactive;
 
 import it.units.erallab.hmsrobots.core.controllers.SmoothedController;
+import it.units.erallab.hmsrobots.core.interactive.generalizedcontroller.ButtonsController2;
+import it.units.erallab.hmsrobots.core.interactive.generalizedcontroller.PropagationController2;
 import it.units.erallab.hmsrobots.core.objects.Ground;
 import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
@@ -82,7 +84,7 @@ public class RunManager {
   }
 
   private void doSession(int totalTime, boolean trainingFlag, String fileName, Grid<Boolean> body, DevicePoller devicePoller, String division, boolean writeToFile) {
-    ButtonsController basicInteractiveController = new ButtonsController(division, devicePoller);
+    ButtonsController2 basicInteractiveController = new ButtonsController2(division, devicePoller);
     Robot robot = new Robot(
         new SmoothedController(basicInteractiveController, 5),
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
@@ -110,7 +112,8 @@ public class RunManager {
 
   private void waveSession(int totalTime, boolean trainingFlag, String fileName, Grid<Boolean> body, DevicePoller devicePoller, boolean writeToFile) {
     //Grid<Boolean> body = RobotUtils.buildShape("free-10000-10001-11111-11111-10001-10000");
-    PropagationController basicInteractiveController = new PropagationController(1d, .5d, devicePoller);
+    //PropagationController basicInteractiveController = new PropagationController(1d, .5d, devicePoller);
+    PropagationController2 basicInteractiveController = new PropagationController2(1d, .5d, "2", devicePoller);
     Robot robot = new Robot(
         basicInteractiveController,
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
