@@ -43,10 +43,6 @@ public class DescreteControllerManager {
     return shape;
   }
 
-//  private void setRobotAreasToContract(boolean keyPressed, int index) {
-//    this.robotAreasToContract.set(index, keyPressed);
-//  }
-
 
   enum RobotArea {
     LEFT,
@@ -103,7 +99,7 @@ public class DescreteControllerManager {
   }
 
   public static void main(String[] args) {
-    String division = "2ud";
+    String division = "2";
     Grid<Boolean> shape = RobotUtils.buildShape("worm-4x2");
 
     Set<Grid.Key> center = shape.stream()
@@ -126,8 +122,24 @@ public class DescreteControllerManager {
             )
         ));
     devicePoller.start(null, canvasManager);
-    DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
-    DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+    List<DiscreteActionsController.Action> actionList;
+    if (division.equals("2ud")) {
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      actionList = List.of(aUp, aDown);
+    } else if (division.equals("4")) {
+      //TODO: implement the actions of the robot divided in 4 parts
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      actionList = List.of(aUp, aDown, aLeft, aRight);
+    } else {
+      //TODO: implement left right actions
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      actionList = List.of(aLeft, aRight);
+    }
     TimedRealFunction f = TimedRealFunction.from(
         (t, in) -> computeArrayBifunction(division, devicePoller),//new double[]{1d, 1d},
         CentralizedSensing.nOfInputs(body),
@@ -135,7 +147,7 @@ public class DescreteControllerManager {
     );
     AbstractController controller = new DiscreteActionsController(
         RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(RobotUtils.buildShape("worm-4x2")),
-        List.of(aUp, aDown), // 2 o 4 azioni diverse
+        actionList, // 2 o 4 azioni diverse
         f, // timedRealFunction, decide l'indice dell'azione da compiere sulla base al device poller ignorando gli input
         1,
         1d
