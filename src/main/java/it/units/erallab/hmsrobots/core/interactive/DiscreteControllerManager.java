@@ -23,13 +23,13 @@ import org.dyn4j.dynamics.Settings;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class DescreteControllerManager {
+public class DiscreteControllerManager {
 
   //private final List<Boolean> robotAreasToContract;
   String division;
   private DevicePoller devicePoller;
 
-  public DescreteControllerManager(String division, DevicePoller devicePoller) {
+  public DiscreteControllerManager(String division, DevicePoller devicePoller) {
     this.division = division;
     this.devicePoller = devicePoller;
     int divisionInt = division.equals("4") ? 4 : 2;
