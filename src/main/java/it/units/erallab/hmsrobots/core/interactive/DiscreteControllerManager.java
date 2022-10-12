@@ -67,9 +67,6 @@ public class DiscreteControllerManager {
         } else if (area.equals(RobotArea.DOWN) && key.y() > midCenterY){
           return 1d;
         } else { return -1d;}
-        //} else {
-        //return -1d;
-        //}
       }
     };
   }
@@ -121,8 +118,10 @@ public class DiscreteControllerManager {
                 )
             )
         ));
+
     devicePoller.start(null, canvasManager);
     List<DiscreteActionsController.Action> actionList;
+
     if (division.equals("2ud")) {
       DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
       DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
@@ -135,9 +134,8 @@ public class DiscreteControllerManager {
       DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
       actionList = List.of(aUp, aDown, aLeft, aRight);
     } else {
-      //TODO: implement left right actions
-      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 2d ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 2d / 4d ? 1d : -1d);
       actionList = List.of(aLeft, aRight);
     }
     TimedRealFunction f = TimedRealFunction.from(

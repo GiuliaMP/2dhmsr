@@ -10,17 +10,17 @@ import java.util.stream.Collectors;
 public class DivisionUtils {
 
   public static Set<Set<Grid.Key>> computeTwoPosesLeftRight(Grid<Boolean> shape) {
-    Set<Grid.Key> top = shape.stream()
+    Set<Grid.Key> left = shape.stream()
         .filter(e -> e.key().x() < shape.getW() / 2d)
         .filter(Grid.Entry::value)
         .map(Grid.Entry::key)
         .collect(Collectors.toSet());
-    Set<Grid.Key> bottom = shape.stream()
+    Set<Grid.Key> right = shape.stream()
         .filter(e -> e.key().x() >= shape.getW() * 2d / 4d)
         .filter(Grid.Entry::value)
         .map(Grid.Entry::key)
         .collect(Collectors.toSet());
-    return new LinkedHashSet<>(List.of(top, bottom));
+    return new LinkedHashSet<>(List.of(left, right));
   }
 
   public static Set<Set<Grid.Key>> computeTwoPosesUpDown(Grid<Boolean> shape) {
