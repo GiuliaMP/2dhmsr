@@ -73,7 +73,7 @@ public class DiscreteControllerManager {
 
   public static double[] computeArrayBifunction(String division, DevicePoller devicePoller) {
     double[] out;
-    Map<DevicePoller.RobotAreas, Boolean> keyPressed = new HashMap<DevicePoller.RobotAreas, Boolean>(devicePoller.getKeyPressed());
+    Map<DevicePoller.RobotAreas, Boolean> keyPressed = new HashMap<>(devicePoller.getKeyPressed());
     if (division.equals("2ud")) {
       out = new double[3];
       out[0] = keyPressed.get(DevicePoller.RobotAreas.UP) ? 1d : -1d;
@@ -81,11 +81,12 @@ public class DiscreteControllerManager {
       out[2] = 0d;
     } else if (division.equals("4")) {
       out = new double[5];
-      out[0] = keyPressed.get(DevicePoller.RobotAreas.LEFT) ? 1d : -1d;
+      out[0] = keyPressed.get(DevicePoller.RobotAreas.UP) ? 1d : -1d;
       out[1] = keyPressed.get(DevicePoller.RobotAreas.DOWN) ? 1d : -1d;
-      out[2] = keyPressed.get(DevicePoller.RobotAreas.UP) ? 1d : -1d;
+      out[2] = keyPressed.get(DevicePoller.RobotAreas.LEFT) ? 1d : -1d;
       out[3] = keyPressed.get(DevicePoller.RobotAreas.RIGHT) ? 1d : -1d;
       out[4] = 0d;
+      //actionList = List.of(aUp, aDown, aLeft, aRight);
     } else {
       out = new double[3];
       out[0] = keyPressed.get(DevicePoller.RobotAreas.LEFT) ? 1d : -1d;
@@ -96,7 +97,13 @@ public class DiscreteControllerManager {
   }
 
   public static void main(String[] args) {
-    String division = "2";
+    String division = "4";
+    int nOutput;
+    if (division.equals("4")) {
+      nOutput = 5;
+    } else {
+      nOutput = 3;
+    }
     Grid<Boolean> shape = RobotUtils.buildShape("worm-4x2");
 
     Set<Grid.Key> center = shape.stream()
@@ -123,15 +130,14 @@ public class DiscreteControllerManager {
     List<DiscreteActionsController.Action> actionList;
 
     if (division.equals("2ud")) {
-      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
       DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
       actionList = List.of(aUp, aDown);
     } else if (division.equals("4")) {
-      //TODO: implement the actions of the robot divided in 4 parts
-      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
       DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 4d ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 3d / 4d ? 1d : -1d);
       actionList = List.of(aUp, aDown, aLeft, aRight);
     } else {
       DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 2d ? 1d : -1d);
@@ -141,7 +147,7 @@ public class DiscreteControllerManager {
     TimedRealFunction f = TimedRealFunction.from(
         (t, in) -> computeArrayBifunction(division, devicePoller),//new double[]{1d, 1d},
         CentralizedSensing.nOfInputs(body),
-        3
+        nOutput
     );
     AbstractController controller = new DiscreteActionsController(
         RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(RobotUtils.buildShape("worm-4x2")),
