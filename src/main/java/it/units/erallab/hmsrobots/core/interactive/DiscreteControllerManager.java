@@ -86,7 +86,6 @@ public class DiscreteControllerManager {
       out[2] = keyPressed.get(DevicePoller.RobotAreas.LEFT) ? 1d : -1d;
       out[3] = keyPressed.get(DevicePoller.RobotAreas.RIGHT) ? 1d : -1d;
       out[4] = 0d;
-      //actionList = List.of(aUp, aDown, aLeft, aRight);
     } else {
       out = new double[3];
       out[0] = keyPressed.get(DevicePoller.RobotAreas.LEFT) ? 1d : -1d;
@@ -94,6 +93,32 @@ public class DiscreteControllerManager {
       out[2] = 0d;
     }
     return out;
+  }
+
+  public static List<DiscreteActionsController.Action> makeActionList(Grid<Boolean> shape, String division) {
+    List<DiscreteActionsController.Action> actionList;
+    Set<Grid.Key> center = shape.stream()
+        .filter(Grid.Entry::value)
+        .map(Grid.Entry::key)
+        .collect(Collectors.toSet());
+    double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
+    if (division.equals("2ud")) {
+      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      actionList = List.of(aUp, aDown);
+    } else if (division.equals("4")) {
+      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 4d ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 3d / 4d ? 1d : -1d);
+      actionList = List.of(aUp, aDown, aLeft, aRight);
+    } else {
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 2d ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 2d / 4d ? 1d : -1d);
+      actionList = List.of(aLeft, aRight);
+    }
+
+    return actionList;
   }
 
   public static void main(String[] args) {
@@ -105,12 +130,6 @@ public class DiscreteControllerManager {
       nOutput = 3;
     }
     Grid<Boolean> shape = RobotUtils.buildShape("worm-4x2");
-
-    Set<Grid.Key> center = shape.stream()
-        .filter(Grid.Entry::value)
-        .map(Grid.Entry::key)
-        .collect(Collectors.toSet());
-    double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
 
     Grid<Voxel> body = RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(shape);
     DevicePoller devicePoller = new KeyboardPoller();
@@ -127,23 +146,8 @@ public class DiscreteControllerManager {
         ));
 
     devicePoller.start(null, canvasManager);
-    List<DiscreteActionsController.Action> actionList;
+    List<DiscreteActionsController.Action> actionList = makeActionList(shape, division);
 
-    if (division.equals("2ud")) {
-      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
-      actionList = List.of(aUp, aDown);
-    } else if (division.equals("4")) {
-      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 4d ? 1d : -1d);
-      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 3d / 4d ? 1d : -1d);
-      actionList = List.of(aUp, aDown, aLeft, aRight);
-    } else {
-      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 2d ? 1d : -1d);
-      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 2d / 4d ? 1d : -1d);
-      actionList = List.of(aLeft, aRight);
-    }
     TimedRealFunction f = TimedRealFunction.from(
         (t, in) -> computeArrayBifunction(division, devicePoller),//new double[]{1d, 1d},
         CentralizedSensing.nOfInputs(body),
