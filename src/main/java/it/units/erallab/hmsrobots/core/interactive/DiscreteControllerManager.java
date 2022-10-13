@@ -122,14 +122,11 @@ public class DiscreteControllerManager {
   }
 
   public static void main(String[] args) {
-    String division = "4";
-    int nOutput;
-    if (division.equals("4")) {
-      nOutput = 5;
-    } else {
-      nOutput = 3;
-    }
-    Grid<Boolean> shape = RobotUtils.buildShape("worm-4x2");
+    String division = args[0]; // NickName
+    String robotType = args[1]; // Already the "correct" type
+
+    int nOutput = division.equals("4") ? 5 : 3;
+    Grid<Boolean> shape = RobotUtils.buildShape(robotType);
 
     Grid<Voxel> body = RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(shape);
     DevicePoller devicePoller = new KeyboardPoller();
@@ -164,7 +161,6 @@ public class DiscreteControllerManager {
     Locomotion locomotion = new Locomotion(30, Locomotion.createTerrain("hilly-1-10-0"), new Settings());
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
         canvasManager, devicePoller, controller, division, 30, true);
-    //GridOnlineViewer.run(locomotion, robot);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
   }
 
