@@ -17,33 +17,27 @@
 
 package it.units.erallab.hmsrobots.core.controllers;
 
-import it.units.erallab.hmsrobots.core.objects.Robot;
 import it.units.erallab.hmsrobots.core.objects.Voxel;
-import it.units.erallab.hmsrobots.tasks.locomotion.Locomotion;
 import it.units.erallab.hmsrobots.util.Grid;
-import it.units.erallab.hmsrobots.util.RobotUtils;
-import it.units.erallab.hmsrobots.viewers.GridOnlineViewer;
 import org.apache.commons.lang3.ArrayUtils;
-import org.dyn4j.dynamics.Settings;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-public class DiscreteActionsController extends AbstractController {
+public class DiscreteActionsController extends AbstractController implements Serializable  {
 
-  //TODO add serialization annotation
-
-  public interface Action extends BiFunction<Double, Grid.Key, Double> {
+  public interface Action extends BiFunction<Double, Grid.Key, Double>, Serializable {
   }
 
   private final int nOfInputs;
   private final List<Action> actions;
   private TimedRealFunction function;
-
   private final List<List<Double>> actionLastStartingTimes;
   private final int maxConcurrentActions;
   private final double actionDuration;
+
 
   public DiscreteActionsController(int nOfInputs, List<Action> actions, TimedRealFunction function, int maxConcurrentActions, double actionDuration) {
     this.nOfInputs = nOfInputs;
@@ -79,13 +73,17 @@ public class DiscreteActionsController extends AbstractController {
         .reduce(ArrayUtils::addAll)
         .orElse(new double[nOfInputs]);
     // 2. apply the function and obtain a double[] outputs
-    double[] outputs = function != null ? function.apply(t, inputs) : new double[actions.size() + 1];
+    double[] outputs = function != null ? function.apply(t, inputs) : new double[actions.size()+1];
     // 3. obtain an action index (including 0=no action) from outputs
     int actionIndex = maxIndex(outputs);
+    //double max = Arrays.stream(outputs).max().getAsDouble();
+    //int[] actionIndices = IntStream.range(0, outputs.length).filter(i -> outputs[i] == max).toArray();
     // 4. add the action to ongoing actions
+    //for (var actionIndex : actionIndices) {
     if (actionIndex < actions.size()) { // actions.size() means no action
       actionLastStartingTimes.get(actionIndex).add(t);
     }
+    //}
     // 5. update ongoing actions (remove old actions and/or take just last ones)
     actionLastStartingTimes.replaceAll(times -> times.stream()
         .filter(t0 -> t0 > t - actionDuration)
@@ -108,6 +106,9 @@ public class DiscreteActionsController extends AbstractController {
 
   @Override
   public void reset() {
+    if (function instanceof Resettable) {
+      ((Resettable) function).reset();
+    }
   }
 
   private static int maxIndex(double[] vs) {
@@ -120,11 +121,11 @@ public class DiscreteActionsController extends AbstractController {
     return index;
   }
 
-  public static void main(String[] args) {
+  /*public static void main(String[] args) {
     Action a1 = (t, k) -> t > 0 ? 0 : (k.x() < 2 ? 1d : 0d);
-    Action a2 = (t, k) -> t > 0.2 ? 0 : (k.x() >= 2 ? 1d : 0d);
+    Action a2;
     a2 = (t, k) -> Math.sin(2d * Math.PI * 0.5d * t + k.x() / 4d * Math.PI * 2d);
-    Grid<Voxel> body = RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(RobotUtils.buildShape("worm-4x2"));
+    Grid<Voxel> body = RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(RobotUtils.buildShape("biped-4x3"));
     TimedRealFunction f = TimedRealFunction.from(
         (t, in) -> new double[]{
             Math.sin(2d * Math.PI * 0.5d * t) - 10d,
@@ -144,5 +145,5 @@ public class DiscreteActionsController extends AbstractController {
     Robot robot = new Robot(controller, body);
     Locomotion locomotion = new Locomotion(30, Locomotion.createTerrain("hilly-1-10-0"), new Settings());
     GridOnlineViewer.run(locomotion, robot);
-  }
+  }*/
 }

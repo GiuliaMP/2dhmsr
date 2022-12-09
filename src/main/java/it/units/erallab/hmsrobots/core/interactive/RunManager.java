@@ -90,7 +90,6 @@ public class RunManager {
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
     );
     Locomotion locomotion = new Locomotion(totalTime,
-        //InteractiveTerrainManager.createTerrain("downhillHilly-0.5-10-0"),
         Locomotion.createTerrain("downhill-10"),
         new Settings()
     );
@@ -119,7 +118,6 @@ public class RunManager {
         RobotUtils.buildSensorizingFunction("uniform-a-0.01").apply(body)
     );
     Locomotion locomotion = new Locomotion(totalTime,
-        //InteractiveTerrainManager.createTerrain("downhillHilly-0.5-10-0"),
         Locomotion.createTerrain("downhill-10"),
         new Settings()
     );

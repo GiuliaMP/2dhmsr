@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 public class DiscreteControllerManager {
 
-  //private final List<Boolean> robotAreasToContract;
   String division;
   private DevicePoller devicePoller;
 
@@ -57,16 +56,45 @@ public class DiscreteControllerManager {
       @Override
       public Double apply(Double t, Grid.Key key) {
         //if (t<deltaT) {
-        Set<Grid.Key> center = shape.stream()
-            .filter(Grid.Entry::value)
-            .map(Grid.Entry::key)
-            .collect(Collectors.toSet());
-        double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
-        if (area.equals(RobotArea.UP) && key.y() <= midCenterY) {
-          return 1d;
-        } else if (area.equals(RobotArea.DOWN) && key.y() > midCenterY){
-          return 1d;
-        } else { return -1d;}
+        if (division.equals("2ud")) {
+          Set<Grid.Key> center = shape.stream()
+              .filter(Grid.Entry::value)
+              .map(Grid.Entry::key)
+              .collect(Collectors.toSet());
+          double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
+          if (area.equals(RobotArea.UP) && key.y() <= midCenterY) {
+            return 1d;
+          } else if (area.equals(RobotArea.DOWN) && key.y() > midCenterY) {
+            return 1d;
+          } else {
+            return -1d;
+          }
+        } else if (division.equals("2lr")) {
+          if (area.equals(RobotArea.LEFT) && key.x() >= shape.getW() / 2d) {
+            return 1d;
+          } else if (area.equals(RobotArea.RIGHT) && key.x() < shape.getW() * 2d / 4d) {
+            return 1d;
+          } else {
+            return -1d;
+          }
+        } else {
+          Set<Grid.Key> center = shape.stream()
+              .filter(Grid.Entry::value)
+              .map(Grid.Entry::key)
+              .collect(Collectors.toSet());
+          double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
+          if (area.equals(RobotArea.UP) && (key.y() < midCenterY || key.x() < shape.getW() / 4d || key.x() >= shape.getW() * 3d / 4d)) {
+            return 1d;
+          } else if (area.equals(RobotArea.DOWN) && (key.y() >= midCenterY || key.x() < shape.getW() / 4d || key.x() >= shape.getW() * 3d / 4d)) {
+            return 1d;
+          } else if (area.equals(RobotArea.LEFT) && key.x() >= shape.getW() / 4d) {
+            return 1d;
+          } else if (area.equals(RobotArea.RIGHT) && key.x() < shape.getW() * 3d / 4d) {
+            return 1d;
+          } else {
+            return -1d;
+          }
+        }
       }
     };
   }
@@ -97,26 +125,33 @@ public class DiscreteControllerManager {
 
   public static List<DiscreteActionsController.Action> makeActionList(Grid<Boolean> shape, String division) {
     List<DiscreteActionsController.Action> actionList;
-    Set<Grid.Key> center = shape.stream()
-        .filter(Grid.Entry::value)
-        .map(Grid.Entry::key)
-        .collect(Collectors.toSet());
-    double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
     if (division.equals("2ud")) {
-      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      Set<Grid.Key> center = shape.stream()
+          .filter(Grid.Entry::value)
+          .map(Grid.Entry::key)
+          .collect(Collectors.toSet());
+      double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
+      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
       actionList = List.of(aUp, aDown);
     } else if (division.equals("4")) {
-      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : (k.y() > midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : (k.y() <= midCenterY ? 1d : -1d);
-      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 4d ? 1d : -1d);
-      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 3d / 4d ? 1d : -1d);
+      Set<Grid.Key> center = shape.stream()
+          .filter(e -> e.key().x() >= shape.getW() / 4d && e.key().x() < shape.getW() * 3d / 4d)
+          .filter(Grid.Entry::value)
+          .map(Grid.Entry::key)
+          .collect(Collectors.toSet());
+      double midCenterY = center.stream().mapToDouble(Grid.Key::y).average().orElse(0d);
+      DiscreteActionsController.Action aUp = (t, k) -> t > 0 ? 0 : ((k.y() <= midCenterY || k.x() < shape.getW() / 4d || k.x() >= shape.getW() * 3d / 4d) ? 1d : -1d);
+      DiscreteActionsController.Action aDown = (t, k) -> t > 0 ? 0 : ((k.y() > midCenterY || k.x() < shape.getW() / 4d || k.x() >= shape.getW() * 3d / 4d) ? 1d : -1d);
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() / 4d ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() * 3d / 4d ? 1d : -1d);
       actionList = List.of(aUp, aDown, aLeft, aRight);
     } else {
-      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() / 2d ? 1d : -1d);
-      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() * 2d / 4d ? 1d : -1d);
+      DiscreteActionsController.Action aLeft = (t, k) -> t > 0 ? 0 : (k.x() >= shape.getW() / 2d ? 1d : -1d);
+      DiscreteActionsController.Action aRight = (t, k) -> t > 0 ? 0 : (k.x() < shape.getW() * 2d / 4d ? 1d : -1d);
       actionList = List.of(aLeft, aRight);
     }
+
 
     return actionList;
   }
@@ -151,14 +186,14 @@ public class DiscreteControllerManager {
         nOutput
     );
     AbstractController controller = new DiscreteActionsController(
-        RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(RobotUtils.buildShape("worm-4x2")),
+        RobotUtils.buildSensorizingFunction("spinedTouch-f-f-0").apply(RobotUtils.buildShape(robotType)),
         actionList, // 2 o 4 azioni diverse
         f, // timedRealFunction, decide l'indice dell'azione da compiere sulla base al device poller ignorando gli input
-        1,
+        nOutput-1,
         1d
     );
     Robot robot = new Robot(controller, body);
-    Locomotion locomotion = new Locomotion(30, Locomotion.createTerrain("hilly-1-10-0"), new Settings());
+    Locomotion locomotion = new Locomotion(30, Locomotion.createTerrain("flat"), new Settings());
     InteractiveSnapshotListener interactiveSnapshotListener = new InteractiveSnapshotListener(1d / 60d,
         canvasManager, devicePoller, controller, division, 30, true);
     Outcome out = locomotion.apply(robot, interactiveSnapshotListener);
